@@ -9,15 +9,27 @@ import { NextRequest, NextResponse } from "next/server";
 // for every real visitor. Decoding manually here and rewriting with
 // NextResponse.rewrite() sidesteps whatever encoding assumption rewrites()
 // makes internally.
+// One entry per top-level Arabic route from Section 4.1. Add to this list
+// rather than writing a new regex per route — Sprint 7/9 add more
+// (/ادوات/, /عن-الموقع, /سياسة-الخصوصية, /اتصل-بنا, /محفوظاتي).
+const ROUTE_PREFIXES: { arabic: string; ascii: string }[] = [
+  { arabic: "دعاء", ascii: "dua" },
+  { arabic: "اذكار", ascii: "azkar" },
+];
+
 export function proxy(request: NextRequest) {
   const decodedPathname = decodeURIComponent(request.nextUrl.pathname);
-  const match = decodedPathname.match(/^\/دعاء\/([^/]+)(?:\/([^/]+))?\/?$/);
 
-  if (match) {
-    const [, pillar, slug] = match;
-    const url = request.nextUrl.clone();
-    url.pathname = slug ? `/dua/${pillar}/${slug}` : `/dua/${pillar}`;
-    return NextResponse.rewrite(url);
+  for (const { arabic, ascii } of ROUTE_PREFIXES) {
+    const match = decodedPathname.match(
+      new RegExp(`^/${arabic}(?:/([^/]+))?(?:/([^/]+))?/?$`)
+    );
+    if (match) {
+      const [, first, second] = match;
+      const url = request.nextUrl.clone();
+      url.pathname = first ? `/${ascii}/${first}${second ? `/${second}` : ""}` : `/${ascii}`;
+      return NextResponse.rewrite(url);
+    }
   }
 }
 
