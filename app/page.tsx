@@ -1,6 +1,12 @@
+import { JsonLd } from "@/components/JsonLd";
+import { organizationSchema, websiteSchema } from "@/lib/schema";
+
 export default function Home() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 py-24 text-center">
+      <JsonLd data={websiteSchema()} />
+      <JsonLd data={organizationSchema()} />
+
       <span className="font-sans text-2xl font-semibold tracking-tight text-foreground">
         PrayerFly
       </span>

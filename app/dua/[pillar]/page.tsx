@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { JsonLd } from "@/components/JsonLd";
 import { RelatedDuas } from "@/components/RelatedDuas";
 import { getAllPillarHubs, getPillarHub } from "@/lib/content";
+import { breadcrumbSchema } from "@/lib/schema";
 
 export const revalidate = 604800; // weekly ISR
 
@@ -42,15 +44,17 @@ export default async function PillarHubPage({
     pillar: hub.pillarSlug,
   }));
 
+  const breadcrumbItems = [
+    { label: "الرئيسية", href: "/" },
+    { label: "دعاء", href: "/دعاء" },
+    { label: hub.pillarName, href: `/دعاء/${hub.pillarSlug}` },
+  ];
+
   return (
     <div dir="rtl" className="mx-auto max-w-3xl px-6 py-12">
-      <Breadcrumbs
-        items={[
-          { label: "الرئيسية", href: "/" },
-          { label: "دعاء", href: "/دعاء" },
-          { label: hub.pillarName, href: `/دعاء/${hub.pillarSlug}` },
-        ]}
-      />
+      <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
+
+      <Breadcrumbs items={breadcrumbItems} />
 
       <h1 className="mb-2 mt-3 font-sans text-3xl font-bold text-foreground">{hub.pillarName}</h1>
       <p className="mb-8 text-foreground/70">

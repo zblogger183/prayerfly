@@ -5,10 +5,12 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { AuthenticityBadge } from "@/components/AuthenticityBadge";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { FaqAccordion } from "@/components/FaqAccordion";
+import { JsonLd } from "@/components/JsonLd";
 import { RelatedDuas } from "@/components/RelatedDuas";
 import { TOC, type TOCItem } from "@/components/TOC";
 import { truncateForMeta } from "@/lib/arabic";
 import { decodeSlug, getBuildableEntries, getDua, getRelatedDuas, slugifyPillar } from "@/lib/content";
+import { articleSchema, breadcrumbSchema, faqSchema } from "@/lib/schema";
 import { DuaActions } from "./DuaActions";
 
 // NOTE: this route physically lives at /dua/[pillar]/[slug] (ASCII) rather
@@ -18,10 +20,9 @@ import { DuaActions } from "./DuaActions";
 // static page with zero dynamic params, under nothing but an "app/دعاء/"
 // folder, fails the same way — this is not about dynamic param values,
 // which work fine, only about non-ASCII folder names in the route itself).
-// The public-facing URL is restored to the real "/دعاء/..." path via
-// next.config.ts's rewrites(), so this is invisible to users/crawlers —
-// every href, canonical, and OpenGraph URL in this file still points at
-// "/دعاء/...".
+// The public-facing URL is restored to the real "/دعاء/..." path by
+// proxy.ts, so this is invisible to users/crawlers — every href,
+// canonical, and OpenGraph URL in this file still points at "/دعاء/...".
 
 export const revalidate = 604800; // weekly ISR
 
@@ -74,6 +75,14 @@ export default async function DuaPage({
   }
 
   const relatedDuas = getRelatedDuas(dua);
+  const canonicalPath = `/دعاء/${pillar}/${dua.slug}`;
+
+  const breadcrumbItems = [
+    { label: "الرئيسية", href: "/" },
+    { label: "دعاء", href: "/دعاء" },
+    { label: dua.pillar, href: `/دعاء/${pillar}` },
+    { label: dua.title, href: canonicalPath },
+  ];
 
   const tocItems: TOCItem[] = [
     { id: "authenticity", label: "درجة الصحة" },
@@ -87,14 +96,11 @@ export default async function DuaPage({
 
   return (
     <div dir="rtl" className="mx-auto max-w-3xl px-6 py-12">
-      <Breadcrumbs
-        items={[
-          { label: "الرئيسية", href: "/" },
-          { label: "دعاء", href: "/دعاء" },
-          { label: dua.pillar, href: `/دعاء/${pillar}` },
-          { label: dua.title, href: `/دعاء/${pillar}/${dua.slug}` },
-        ]}
-      />
+      <JsonLd data={articleSchema(dua, canonicalPath)} />
+      <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
+      <JsonLd data={faqSchema(dua.faq)} />
+
+      <Breadcrumbs items={breadcrumbItems} />
 
       {/* 1. H1 — exact primary keyword phrasing */}
       <h1 className="mb-4 mt-3 font-sans text-3xl font-bold text-foreground">
