@@ -12,7 +12,7 @@ import { RelatedDuas } from "@/components/RelatedDuas";
 import { ShareImageButton } from "@/components/ShareImageButton";
 import { TOC } from "@/components/TOC";
 
-import sampleDua from "@/content/duas/دعاء-السفر-مكتوب.json";
+import sampleDua from "@/content/duas/دعاء-السفر.json";
 import { TashkeelDemo } from "./TashkeelDemo";
 
 export const metadata: Metadata = {
