@@ -1,10 +1,12 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { DuaSchema, type Dua } from "@/lib/schema";
+import { PillarSchema, type Pillar } from "@/lib/pillar-schema";
 import type { RelatedDua } from "@/components/RelatedDuas";
 
 const CONTENT_PLAN_PATH = join(process.cwd(), "content-plan.json");
 const DUAS_DIR = join(process.cwd(), "content", "duas");
+const PILLARS_DIR = join(process.cwd(), "content", "pillars");
 
 export interface ContentPlanEntry {
   pillar: string;
@@ -103,32 +105,83 @@ export function getAllDuaSlugs(): string[] {
 export interface PillarHub {
   pillarName: string;
   pillarSlug: string;
-  children: ContentPlanEntry[];
+  description?: string;
+  introMarkdown?: string;
+  children: { title: string; slug: string }[];
+}
+
+/**
+ * A hand-authored pillar page (content/pillars/*.json) — e.g. "أدعية عامة",
+ * the general duas index that ادعيه (a category query, not a single dua)
+ * got re-slotted to instead of being forced into DuaSchema. Its child_slugs
+ * is an explicit, curated list rather than "every dua whose pillar field
+ * happens to match" — deliberate for a general index, but it does mean
+ * updating this file as more duas are worth featuring here.
+ */
+export function getPillarSchemaEntry(pillarSlug: string): Pillar | null {
+  const path = join(PILLARS_DIR, `${decodeSlug(pillarSlug)}.json`);
+  if (!existsSync(path)) return null;
+
+  const raw = JSON.parse(readFileSync(path, "utf-8"));
+  const result = PillarSchema.safeParse(raw);
+  if (!result.success) {
+    console.error(`content/pillars/${pillarSlug}.json failed schema validation:`, result.error.message);
+    return null;
+  }
+  return result.data;
 }
 
 /**
  * Same "only what's actually written" rule as getBuildableEntries: a hub
- * page only lists/exists for pillars that have at least one real dua page,
- * not every pillar the Sprint 2 classifier happened to assign.
+ * page only lists/exists for pillars that have at least one real dua page
+ * OR a hand-authored content/pillars/*.json entry — not every pillar the
+ * Sprint 2 classifier happened to assign.
  */
 export function getPillarHub(pillarSlug: string): PillarHub | null {
   const decoded = decodeSlug(pillarSlug);
-  const children = getBuildableEntries().filter(
+  const schemaEntry = getPillarSchemaEntry(decoded);
+
+  if (schemaEntry) {
+    const children = schemaEntry.child_slugs
+      .map((slug) => getDua(slug))
+      .filter((dua): dua is Dua => dua !== null)
+      .map((dua) => ({ title: dua.title, slug: dua.slug }));
+    return {
+      pillarName: schemaEntry.title,
+      pillarSlug: decoded,
+      description: schemaEntry.description,
+      introMarkdown: schemaEntry.intro_markdown,
+      children,
+    };
+  }
+
+  const autoEntries = getBuildableEntries().filter(
     (entry) => slugifyPillar(entry.pillar) === decoded
   );
-  if (children.length === 0) return null;
-  return { pillarName: children[0].pillar, pillarSlug: decoded, children };
+  if (autoEntries.length === 0) return null;
+  return {
+    pillarName: autoEntries[0].pillar,
+    pillarSlug: decoded,
+    children: autoEntries.map((entry) => ({ title: entry.canonical_topic, slug: entry.slug })),
+  };
 }
 
 export function getAllPillarHubs(): PillarHub[] {
-  const bySlug = new Map<string, PillarHub>();
+  const slugs = new Set<string>();
   for (const entry of getBuildableEntries()) {
-    const pillarSlug = slugifyPillar(entry.pillar);
-    const existing = bySlug.get(pillarSlug);
-    if (existing) existing.children.push(entry);
-    else bySlug.set(pillarSlug, { pillarName: entry.pillar, pillarSlug, children: [entry] });
+    slugs.add(slugifyPillar(entry.pillar));
   }
-  return [...bySlug.values()];
+  if (existsSync(PILLARS_DIR)) {
+    for (const file of readdirSync(PILLARS_DIR)) {
+      if (file.endsWith(".json")) slugs.add(file.slice(0, -".json".length));
+    }
+  }
+  const hubs: PillarHub[] = [];
+  for (const slug of slugs) {
+    const hub = getPillarHub(slug);
+    if (hub) hubs.push(hub);
+  }
+  return hubs;
 }
 
 /**

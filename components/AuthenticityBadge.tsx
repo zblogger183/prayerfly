@@ -7,6 +7,14 @@ const GRADE_STYLES: Record<Grade, { label: string; className: string }> = {
   hasan: { label: "حسن", className: "bg-amber-100 text-amber-800 border-amber-300" },
   daif: { label: "ضعيف", className: "bg-red-100 text-red-800 border-red-300" },
   mixed: { label: "متفاوت", className: "bg-zinc-100 text-zinc-700 border-zinc-300" },
+  // Not a hadith grade at all — e.g. دعاء ختم القرآن, a scholarly-compiled
+  // or companion-practice text with no single fixed prophetic wording.
+  // Slate rather than mixed's zinc so it doesn't read as "just another
+  // shade of gray" next to a real (if contested) hadith grade.
+  no_fixed_hadith: {
+    label: "دعاء مأثور، وليس حديثًا نبويًا ثابتًا",
+    className: "bg-slate-100 text-slate-700 border-slate-300",
+  },
 };
 
 interface AuthenticityBadgeProps {

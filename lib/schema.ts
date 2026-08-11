@@ -9,7 +9,11 @@ export const DuaSchema = z.object({
   quick_answer: z.string().max(400),
   arabic_text_tashkeel: z.string(),
   arabic_text_plain: z.string(),
-  authenticity_grade: z.enum(["sahih", "hasan", "daif", "mixed"]),
+  // "no_fixed_hadith": for duas with no single fixed prophetic (marfūʿ)
+  // wording — a scholarly-compiled or companion-practice text (e.g. دعاء
+  // ختم القرآن) — where forcing a sahih/hasan/daif grade would misrepresent
+  // it as a graded hadith it isn't.
+  authenticity_grade: z.enum(["sahih", "hasan", "daif", "mixed", "no_fixed_hadith"]),
   narrator: z.string().optional(),
   primary_source: z.string(),
   source_url: z.string().url().optional(),

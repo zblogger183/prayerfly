@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { MDXRemote } from "next-mdx-remote/rsc";
 
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { JsonLd } from "@/components/JsonLd";
@@ -24,7 +25,7 @@ export async function generateMetadata({
 
   return {
     title: hub.pillarName,
-    description: `أدعية موثقة في باب ${hub.pillarName}`,
+    description: hub.description ?? `أدعية موثقة في باب ${hub.pillarName}`,
     alternates: { canonical: `/دعاء/${hub.pillarSlug}` },
   };
 }
@@ -38,9 +39,9 @@ export default async function PillarHubPage({
   const hub = getPillarHub(pillar);
   if (!hub) notFound();
 
-  const items = hub.children.map((entry) => ({
-    title: entry.canonical_topic,
-    slug: entry.slug,
+  const items = hub.children.map((child) => ({
+    title: child.title,
+    slug: child.slug,
     pillar: hub.pillarSlug,
   }));
 
@@ -57,9 +58,16 @@ export default async function PillarHubPage({
       <Breadcrumbs items={breadcrumbItems} />
 
       <h1 className="mb-2 mt-3 font-sans text-3xl font-bold text-foreground">{hub.pillarName}</h1>
-      <p className="mb-8 text-foreground/70">
-        أدعية موثقة بإسناد صحيح في باب {hub.pillarName}، مع درجة الصحة والمصدر لكل دعاء.
-      </p>
+
+      {hub.introMarkdown ? (
+        <div className="prose prose-sm mb-8 max-w-none text-foreground/85">
+          <MDXRemote source={hub.introMarkdown} />
+        </div>
+      ) : (
+        <p className="mb-8 text-foreground/70">
+          أدعية موثقة بإسناد صحيح في باب {hub.pillarName}، مع درجة الصحة والمصدر لكل دعاء.
+        </p>
+      )}
 
       <RelatedDuas items={items} />
     </div>
