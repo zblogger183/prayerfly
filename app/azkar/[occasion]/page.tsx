@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { ErrorReportLink } from "@/components/ErrorReportLink";
 import { FaqAccordion } from "@/components/FaqAccordion";
 import { JsonLd } from "@/components/JsonLd";
+import { RelatedDuas } from "@/components/RelatedDuas";
 import { TOC, type TOCItem } from "@/components/TOC";
 import { getAdhkarCollection, getAllAdhkarSlugs } from "@/lib/adhkar";
-import { decodeSlug } from "@/lib/content";
+import { decodeSlug, getRelatedDuas } from "@/lib/content";
 import { truncateForMeta } from "@/lib/arabic";
 import { breadcrumbSchema, faqSchema } from "@/lib/schema";
 import { AdhkarItemsList } from "./AdhkarItemsList";
@@ -39,6 +41,7 @@ export async function generateMetadata({
     description,
     alternates: { canonical: canonicalPath },
     openGraph: { title: collection.title, description, url: canonicalPath, type: "article" },
+    ...(collection.index ? {} : { robots: { index: false, follow: true } }),
   };
 }
 
@@ -53,13 +56,15 @@ export default async function AdhkarPage({
 
   const breadcrumbItems = [
     { label: "الرئيسية", href: "/" },
-    { label: "اذكار", href: "/اذكار" },
     { label: collection.title, href: `/اذكار/${collection.slug}` },
   ];
+
+  const relatedDuas = getRelatedDuas(collection);
 
   const tocItems: TOCItem[] = [
     { id: "items", label: "الأذكار" },
     { id: "faq", label: "الأسئلة الشائعة" },
+    ...(relatedDuas.length > 0 ? [{ id: "related", label: "أدعية ذات صلة" }] : []),
     { id: "references", label: "المصادر" },
   ];
 
@@ -72,7 +77,7 @@ export default async function AdhkarPage({
 
       <Breadcrumbs items={breadcrumbItems} />
 
-      <h1 className="mb-4 mt-3 font-sans text-3xl font-bold text-foreground">{collection.title}</h1>
+      <h1 className="mb-4 mt-3 font-sans text-3xl font-bold text-primary">{collection.title}</h1>
 
       <p className="mb-8 rounded-lg bg-foreground/[0.03] p-4 text-base leading-relaxed text-foreground/85">
         {collection.quick_answer}
@@ -85,18 +90,27 @@ export default async function AdhkarPage({
           </section>
 
           <section id="faq" className="scroll-mt-20 space-y-3">
-            <h2 className="font-sans text-lg font-semibold text-foreground">الأسئلة الشائعة</h2>
+            <h2 className="font-sans text-lg font-semibold text-primary">الأسئلة الشائعة</h2>
             <FaqAccordion items={collection.faq} />
           </section>
 
+          {relatedDuas.length > 0 && (
+            <section id="related" className="scroll-mt-20 space-y-3">
+              <h2 className="font-sans text-lg font-semibold text-primary">أدعية ذات صلة</h2>
+              <RelatedDuas items={relatedDuas} />
+            </section>
+          )}
+
           <section id="references" className="scroll-mt-20 space-y-2">
-            <h2 className="font-sans text-lg font-semibold text-foreground">المصادر</h2>
+            <h2 className="font-sans text-lg font-semibold text-primary">المصادر</h2>
             <ol className="list-inside list-decimal space-y-1 text-sm text-foreground/70">
               {uniqueSources.map((source) => (
                 <li key={source}>{source}</li>
               ))}
             </ol>
           </section>
+
+          <ErrorReportLink pageTitle={collection.title} pageUrl={`/اذكار/${collection.slug}`} />
         </div>
 
         <aside className="hidden md:block">

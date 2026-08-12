@@ -24,7 +24,7 @@ export function TOC({ items }: TOCProps) {
       <ol className="space-y-1.5">
         {items.map((item) => (
           <li key={item.id}>
-            <a href={`#${item.id}`} className="text-foreground/60 hover:text-foreground hover:underline">
+            <a href={`#${item.id}`} className="text-foreground/60 hover:text-primary hover:underline">
               {item.label}
             </a>
           </li>

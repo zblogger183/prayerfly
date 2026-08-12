@@ -22,9 +22,9 @@ export function CopyButton({ text }: CopyButtonProps) {
     <button
       type="button"
       onClick={handleClick}
-      className="inline-flex items-center gap-1.5 rounded-lg border border-foreground/15 px-3 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-foreground/5"
+      className="inline-flex items-center gap-1.5 rounded-lg border border-foreground/15 px-3 py-1.5 text-sm text-foreground/80 transition-colors hover:border-primary/30 hover:bg-foreground/5"
     >
-      {copied ? <Check className="size-4 text-emerald-600" /> : <Copy className="size-4" />}
+      {copied ? <Check className="size-4 text-primary" /> : <Copy className="size-4" />}
       {copied ? "تم النسخ" : "نسخ"}
     </button>
   );

@@ -4,6 +4,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 
 import { AuthenticityBadge } from "@/components/AuthenticityBadge";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { ErrorReportLink } from "@/components/ErrorReportLink";
 import { FaqAccordion } from "@/components/FaqAccordion";
 import { JsonLd } from "@/components/JsonLd";
 import { RelatedDuas } from "@/components/RelatedDuas";
@@ -55,6 +56,7 @@ export async function generateMetadata({
       url: canonicalPath,
       type: "article",
     },
+    ...(dua.index ? {} : { robots: { index: false, follow: true } }),
   };
 }
 
@@ -79,7 +81,6 @@ export default async function DuaPage({
 
   const breadcrumbItems = [
     { label: "الرئيسية", href: "/" },
-    { label: "دعاء", href: "/دعاء" },
     { label: dua.pillar, href: `/دعاء/${pillar}` },
     { label: dua.title, href: canonicalPath },
   ];
@@ -103,7 +104,7 @@ export default async function DuaPage({
       <Breadcrumbs items={breadcrumbItems} />
 
       {/* 1. H1 — exact primary keyword phrasing */}
-      <h1 className="mb-4 mt-3 font-sans text-3xl font-bold text-foreground">
+      <h1 className="mb-4 mt-3 font-sans text-3xl font-bold text-primary">
         {dua.primary_keyword}
       </h1>
 
@@ -125,7 +126,7 @@ export default async function DuaPage({
 
           {/* 4. Authenticity block */}
           <section id="authenticity" className="scroll-mt-20 space-y-2">
-            <h2 className="font-sans text-lg font-semibold text-foreground">درجة الصحة</h2>
+            <h2 className="font-sans text-lg font-semibold text-primary">درجة الصحة</h2>
             <AuthenticityBadge
               grade={dua.authenticity_grade}
               narrator={dua.narrator}
@@ -137,9 +138,9 @@ export default async function DuaPage({
                   href={dua.source_url}
                   target="_blank"
                   rel="noopener noreferrer nofollow"
-                  className="text-emerald-700 hover:underline"
+                  className="text-primary hover:underline"
                 >
-                  التخريج الكامل على الدرر السنية
+                  التخريج الكامل
                 </a>
               </p>
             )}
@@ -147,7 +148,7 @@ export default async function DuaPage({
 
           {/* 5. When / how many times to say it */}
           <section id="when" className="scroll-mt-20 space-y-2">
-            <h2 className="font-sans text-lg font-semibold text-foreground">متى وكم مرة تُقال</h2>
+            <h2 className="font-sans text-lg font-semibold text-primary">متى وكم مرة تُقال</h2>
             <ul className="list-inside list-disc space-y-1 text-foreground/80">
               <li>{dua.occasion}</li>
               {dua.repetition_count && <li>{dua.repetition_count}</li>}
@@ -156,7 +157,7 @@ export default async function DuaPage({
 
           {/* 6. Context & ruling */}
           <section id="ruling" className="scroll-mt-20 space-y-2">
-            <h2 className="font-sans text-lg font-semibold text-foreground">الحكم والسياق</h2>
+            <h2 className="font-sans text-lg font-semibold text-primary">الحكم والسياق</h2>
             <p className="text-sm font-medium text-foreground/60">الحكم: {dua.ruling}</p>
             <div className="prose prose-sm max-w-none text-foreground/85">
               <MDXRemote source={dua.context_markdown} />
@@ -166,7 +167,7 @@ export default async function DuaPage({
           {/* 7. Variants (only if the cluster includes them) */}
           {dua.variants.length > 0 && (
             <section id="variants" className="scroll-mt-20 space-y-3">
-              <h2 className="font-sans text-lg font-semibold text-foreground">صيغ أخرى</h2>
+              <h2 className="font-sans text-lg font-semibold text-primary">صيغ أخرى</h2>
               {dua.variants.map((variant) => (
                 <div key={variant.label}>
                   <p className="mb-1 text-sm font-medium text-foreground/60">{variant.label}</p>
@@ -180,21 +181,21 @@ export default async function DuaPage({
 
           {/* 8. FAQ */}
           <section id="faq" className="scroll-mt-20 space-y-3">
-            <h2 className="font-sans text-lg font-semibold text-foreground">الأسئلة الشائعة</h2>
+            <h2 className="font-sans text-lg font-semibold text-primary">الأسئلة الشائعة</h2>
             <FaqAccordion items={dua.faq} />
           </section>
 
           {/* 9. Related duas */}
           {relatedDuas.length > 0 && (
             <section id="related" className="scroll-mt-20 space-y-3">
-              <h2 className="font-sans text-lg font-semibold text-foreground">أدعية ذات صلة</h2>
+              <h2 className="font-sans text-lg font-semibold text-primary">أدعية ذات صلة</h2>
               <RelatedDuas items={relatedDuas} />
             </section>
           )}
 
           {/* 10. References */}
           <section id="references" className="scroll-mt-20 space-y-2">
-            <h2 className="font-sans text-lg font-semibold text-foreground">المصادر</h2>
+            <h2 className="font-sans text-lg font-semibold text-primary">المصادر</h2>
             <ol className="list-inside list-decimal space-y-1 text-sm text-foreground/70">
               <li>
                 {dua.primary_source}
@@ -206,15 +207,17 @@ export default async function DuaPage({
                       href={dua.source_url}
                       target="_blank"
                       rel="noopener noreferrer nofollow"
-                      className="text-emerald-700 hover:underline"
+                      className="text-primary hover:underline"
                     >
-                      dorar.net
+                      {new URL(dua.source_url).hostname.replace(/^www\./, "")}
                     </a>
                   </>
                 ) : null}
               </li>
             </ol>
           </section>
+
+          <ErrorReportLink pageTitle={dua.title} pageUrl={canonicalPath} />
         </div>
 
         <aside className="hidden md:block">

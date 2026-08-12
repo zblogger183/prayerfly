@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Noto_Sans_Arabic, Noto_Naskh_Arabic } from "next/font/google";
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
 import "./globals.css";
 
 // UI chrome (nav, buttons, body copy) — Arabic + Latin (for the "PrayerFly" wordmark and numerals)
@@ -30,7 +32,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       dir="rtl"
       className={`${notoSansArabic.variable} ${notoNaskhArabic.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        <Header />
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }

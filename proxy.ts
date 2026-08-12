@@ -15,6 +15,12 @@ import { NextRequest, NextResponse } from "next/server";
 const ROUTE_PREFIXES: { arabic: string; ascii: string }[] = [
   { arabic: "دعاء", ascii: "dua" },
   { arabic: "اذكار", ascii: "azkar" },
+  { arabic: "خطوات", ascii: "guides" },
+  { arabic: "عن-الموقع", ascii: "about" },
+  { arabic: "سياسة-الخصوصية", ascii: "privacy" },
+  { arabic: "اتصل-بنا", ascii: "contact" },
+  { arabic: "ادوات", ascii: "tools" },
+  { arabic: "محفوظاتي", ascii: "bookmarks" },
 ];
 
 export function proxy(request: NextRequest) {

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { Guide } from "@/lib/guide-schema";
 
 export const DuaSchema = z.object({
   title: z.string(),
@@ -59,10 +60,8 @@ export function organizationSchema() {
 }
 
 /**
- * No `potentialAction`/SearchAction: the plan calls for one, but no
- * /search route exists yet (homepage search is unbuilt). A SearchAction
- * pointing at a URL that 404s is broken structured data, not a shortcut —
- * add it once a real search page ships.
+ * Sprint 9: homepage search reads `?q=` (HomeSearch's `initialQuery` prop),
+ * so this target is a real, working entry point now, not a placeholder.
  */
 export function websiteSchema() {
   return {
@@ -70,6 +69,14 @@ export function websiteSchema() {
     "@type": "WebSite",
     name: SITE_NAME,
     url: SITE_URL,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${SITE_URL}/?q={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
   };
 }
 
@@ -110,6 +117,28 @@ export function faqSchema(faq: Dua["faq"]) {
         "@type": "Answer",
         text: item.a,
       },
+    })),
+  };
+}
+
+/**
+ * Per Section 6 of the plan: no desktop rich result renders for HowTo
+ * anymore, but the markup stays valid and AI-crawler-useful, so it's worth
+ * the few lines. `text` is the raw step_description markdown source, not
+ * rendered HTML — acceptable for HowToStep's plain-text expectation since
+ * these are written as short prose, not heavy markdown.
+ */
+export function howToSchema(guide: Guide) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: guide.title,
+    description: guide.quick_answer,
+    step: guide.steps.map((step) => ({
+      "@type": "HowToStep",
+      position: step.order,
+      name: step.step_title,
+      text: step.step_description,
     })),
   };
 }

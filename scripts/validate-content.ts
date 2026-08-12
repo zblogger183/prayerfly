@@ -2,33 +2,46 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { z } from "zod";
 import { DuaSchema } from "../lib/schema.ts";
+import { AdhkarCollectionSchema } from "../lib/adhkar-schema.ts";
+import { GuideSchema } from "../lib/guide-schema.ts";
 
-const duasDir = join(import.meta.dirname, "..", "content", "duas");
+const contentRoot = join(import.meta.dirname, "..", "content");
 
-const files = readdirSync(duasDir).filter((file) => file.endsWith(".json"));
+const dirsToValidate: { dir: string; schema: z.ZodType }[] = [
+  { dir: "duas", schema: DuaSchema },
+  { dir: "adhkar", schema: AdhkarCollectionSchema },
+  { dir: "guides", schema: GuideSchema },
+];
 
-if (files.length === 0) {
-  console.error(`No .json files found in ${duasDir}`);
-  process.exit(1);
-}
-
+let totalFiles = 0;
 let hasErrors = false;
 
-for (const file of files) {
-  const raw = readFileSync(join(duasDir, file), "utf-8");
-  const result = DuaSchema.safeParse(JSON.parse(raw));
+for (const { dir, schema } of dirsToValidate) {
+  const fullDir = join(contentRoot, dir);
+  const files = readdirSync(fullDir).filter((file) => file.endsWith(".json"));
 
-  if (result.success) {
-    console.log(`✓ ${file}`);
-  } else {
-    hasErrors = true;
-    console.error(`✗ ${file}`);
-    console.error(z.prettifyError(result.error));
+  for (const file of files) {
+    const raw = readFileSync(join(fullDir, file), "utf-8");
+    const result = schema.safeParse(JSON.parse(raw));
+    totalFiles++;
+
+    if (result.success) {
+      console.log(`✓ ${dir}/${file}`);
+    } else {
+      hasErrors = true;
+      console.error(`✗ ${dir}/${file}`);
+      console.error(z.prettifyError(result.error));
+    }
   }
+}
+
+if (totalFiles === 0) {
+  console.error(`No .json files found under ${contentRoot}`);
+  process.exit(1);
 }
 
 if (hasErrors) {
   process.exit(1);
 }
 
-console.log(`\n${files.length} file(s) validated successfully.`);
+console.log(`\n${totalFiles} file(s) validated successfully.`);

@@ -47,7 +47,6 @@ export default async function PillarHubPage({
 
   const breadcrumbItems = [
     { label: "الرئيسية", href: "/" },
-    { label: "دعاء", href: "/دعاء" },
     { label: hub.pillarName, href: `/دعاء/${hub.pillarSlug}` },
   ];
 
@@ -57,7 +56,7 @@ export default async function PillarHubPage({
 
       <Breadcrumbs items={breadcrumbItems} />
 
-      <h1 className="mb-2 mt-3 font-sans text-3xl font-bold text-foreground">{hub.pillarName}</h1>
+      <h1 className="mb-2 mt-3 font-sans text-3xl font-bold text-primary">{hub.pillarName}</h1>
 
       {hub.introMarkdown ? (
         <div className="prose prose-sm mb-8 max-w-none text-foreground/85">

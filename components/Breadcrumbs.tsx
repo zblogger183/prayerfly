@@ -27,7 +27,7 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
                   {item.label}
                 </span>
               ) : (
-                <Link href={item.href} className="hover:text-foreground hover:underline">
+                <Link href={item.href} className="hover:text-primary hover:underline">
                   {item.label}
                 </Link>
               )}

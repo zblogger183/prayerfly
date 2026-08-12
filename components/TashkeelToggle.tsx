@@ -52,7 +52,7 @@ export function TashkeelToggle({ value, onChange }: TashkeelToggleProps) {
           }
         }}
         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-          value ? "bg-emerald-600" : "bg-foreground/20"
+          value ? "bg-primary" : "bg-foreground/20"
         }`}
       >
         <span

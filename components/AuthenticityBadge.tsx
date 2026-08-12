@@ -3,9 +3,16 @@ import type { Dua } from "@/lib/schema";
 type Grade = Dua["authenticity_grade"];
 
 const GRADE_STYLES: Record<Grade, { label: string; className: string }> = {
-  sahih: { label: "صحيح", className: "bg-emerald-100 text-emerald-800 border-emerald-300" },
-  hasan: { label: "حسن", className: "bg-amber-100 text-amber-800 border-amber-300" },
-  daif: { label: "ضعيف", className: "bg-red-100 text-red-800 border-red-300" },
+  // The one grade allowed to carry brand color (PROJECT_PLAN.md Section 8):
+  // solid primary fill, white text.
+  sahih: { label: "صحيح", className: "border-primary bg-primary text-white" },
+  // Deliberately NOT brand green or amber — hasan needs to stay visually
+  // distinct from both "the on-brand best case" (sahih) and "the warning
+  // case" (daif), so a citation's grade never reads as brand styling.
+  hasan: { label: "حسن", className: "bg-teal-100 text-teal-800 border-teal-300" },
+  // Amber regardless of the brand palette — a weak grade should never look
+  // like a positive, on-brand result by borrowing primary/secondary.
+  daif: { label: "ضعيف", className: "bg-amber-100 text-amber-800 border-amber-300" },
   mixed: { label: "متفاوت", className: "bg-zinc-100 text-zinc-700 border-zinc-300" },
   // Not a hadith grade at all — e.g. دعاء ختم القرآن, a scholarly-compiled
   // or companion-practice text with no single fixed prophetic wording.
@@ -21,22 +28,36 @@ interface AuthenticityBadgeProps {
   grade: Grade;
   narrator?: string;
   source: string;
+  /**
+   * Card-grid contexts (e.g. homepage featured duas): the full
+   * no_fixed_hadith label wraps to two lines at pill width, which — under
+   * CSS Grid's default row-stretch — inflates every sibling card in that
+   * row. Shortened label only; the full wording (and the real grade) is
+   * always one tap away on the actual dua page, and the tooltip below
+   * still carries the complete explanation.
+   */
+  compact?: boolean;
 }
+
+const COMPACT_LABELS: Partial<Record<Grade, string>> = {
+  no_fixed_hadith: "دعاء مأثور",
+};
 
 /**
  * Tooltip is pure CSS (group-hover / group-focus), no client JS needed —
  * this stays a plain server component.
  */
-export function AuthenticityBadge({ grade, narrator, source }: AuthenticityBadgeProps) {
+export function AuthenticityBadge({ grade, narrator, source, compact = false }: AuthenticityBadgeProps) {
   const { label, className } = GRADE_STYLES[grade];
+  const displayLabel = compact ? (COMPACT_LABELS[grade] ?? label) : label;
 
   return (
     <span className="group relative inline-flex">
       <span
         tabIndex={0}
-        className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-sm font-medium ${className}`}
+        className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-sm font-medium ${compact ? "whitespace-nowrap" : ""} ${className}`}
       >
-        {label}
+        {displayLabel}
       </span>
       <span
         role="tooltip"

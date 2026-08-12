@@ -2,6 +2,7 @@
 
 import { DuaText } from "@/components/DuaText";
 import { TashkeelToggle, usePersistedTashkeelPreference } from "@/components/TashkeelToggle";
+import { BookmarkButton } from "@/components/BookmarkButton";
 import { CopyButton } from "@/components/CopyButton";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { ShareImageButton } from "@/components/ShareImageButton";
@@ -31,6 +32,7 @@ export function DuaActions({ textTashkeel, textPlain, title, slug, audioUrl }: D
       <div className="flex flex-wrap items-center gap-2">
         <CopyButton text={textPlain} />
         <ShareImageButton text={textPlain} title={title} fileName={slug} />
+        <BookmarkButton slug={slug} />
       </div>
       <AudioPlayer audioUrl={audioUrl} />
     </div>

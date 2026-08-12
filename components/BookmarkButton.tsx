@@ -17,6 +17,28 @@ function readAll(): string[] {
   }
 }
 
+// useSyncExternalStore requires getSnapshot to return a stable reference
+// when nothing changed — readAll() parses fresh JSON every call, so a naive
+// `() => readAll()` snapshot would return a new array identity on every
+// render and infinite-loop. Cache by the raw string instead; only the
+// bookmark-list consumer (useBookmarkedSlugs) needs the array itself, so
+// this caching lives here rather than duplicated at the call site.
+let cachedRaw: string | null = null;
+let cachedList: string[] = [];
+
+function readAllStable(): string[] {
+  const raw = window.localStorage.getItem(STORAGE_KEY);
+  if (raw !== cachedRaw) {
+    cachedRaw = raw;
+    try {
+      cachedList = raw ? (JSON.parse(raw) as string[]) : [];
+    } catch {
+      cachedList = [];
+    }
+  }
+  return cachedList;
+}
+
 function subscribe(listener: Listener): () => void {
   listeners.add(listener);
   return () => listeners.delete(listener);
@@ -29,6 +51,15 @@ function toggleBookmark(slug: string) {
     : [...current, slug];
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   listeners.forEach((listener) => listener());
+}
+
+/**
+ * Shared with the bookmarks page (`/محفوظاتي/`) so it stays in sync with
+ * whatever BookmarkButton actually toggles, rather than a second
+ * independent read of the same localStorage key.
+ */
+export function useBookmarkedSlugs(): string[] {
+  return useSyncExternalStore(subscribe, readAllStable, () => []);
 }
 
 interface BookmarkButtonProps {
@@ -50,10 +81,10 @@ export function BookmarkButton({ slug }: BookmarkButtonProps) {
       type="button"
       onClick={() => toggleBookmark(slug)}
       aria-pressed={bookmarked}
-      className="inline-flex items-center gap-1.5 rounded-lg border border-foreground/15 px-3 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-foreground/5"
+      className="inline-flex items-center gap-1.5 rounded-lg border border-foreground/15 px-3 py-1.5 text-sm text-foreground/80 transition-colors hover:border-primary/30 hover:bg-foreground/5"
     >
       {bookmarked ? (
-        <BookmarkCheck className="size-4 text-emerald-600" />
+        <BookmarkCheck className="size-4 text-primary" />
       ) : (
         <Bookmark className="size-4" />
       )}
