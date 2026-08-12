@@ -16,6 +16,13 @@ const notoNaskhArabic = Noto_Naskh_Arabic({
   subsets: ["arabic"],
 });
 
+// Same env-var gate as app/robots.ts, defaulting to blocked. A page's own
+// per-page `robots: { index: false, ... }` (e.g. guarded/synthetic
+// entries) still applies independently once this global block lifts —
+// Next's metadata merging only fills this in where a route doesn't
+// already set its own `robots` field.
+const allowIndexing = process.env.NEXT_PUBLIC_ALLOW_INDEXING === "true";
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://prayerfly.com"),
   title: {
@@ -23,6 +30,7 @@ export const metadata: Metadata = {
     template: "%s | PrayerFly",
   },
   description: "أدعية موثقة بإسناد صحيح",
+  ...(allowIndexing ? {} : { robots: { index: false, follow: false } }),
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
