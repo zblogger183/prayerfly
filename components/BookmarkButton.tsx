@@ -8,6 +8,8 @@ const STORAGE_KEY = "prayerfly:bookmarks";
 type Listener = () => void;
 const listeners = new Set<Listener>();
 
+const EMPTY_BOOKMARKS: string[] = [];
+
 function readAll(): string[] {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
@@ -59,7 +61,7 @@ function toggleBookmark(slug: string) {
  * independent read of the same localStorage key.
  */
 export function useBookmarkedSlugs(): string[] {
-  return useSyncExternalStore(subscribe, readAllStable, () => []);
+  return useSyncExternalStore(subscribe, readAllStable, () => EMPTY_BOOKMARKS);
 }
 
 interface BookmarkButtonProps {
