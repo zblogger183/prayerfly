@@ -55,10 +55,12 @@ export default async function ToolPage({ params }: { params: Promise<{ tool: str
 
       <Breadcrumbs items={breadcrumbItems} />
 
-      <h1 className="mb-4 mt-3 font-sans text-3xl font-bold text-foreground">دعاء لشخص</h1>
-      <p className="mb-8 rounded-lg bg-foreground/[0.03] p-4 text-base leading-relaxed text-foreground/85">
-        اختر قرابتك من الشخص والمناسبة، لتحصل مباشرة على الدعاء الثابت المناسب له.
-      </p>
+      <h1 className="mb-4 mt-3 font-sans text-3xl font-bold text-primary">دعاء لشخص</h1>
+      <div className="mb-8 rounded-xl border border-primary-100 bg-primary-50/50 p-5">
+        <p className="text-base leading-relaxed text-foreground/85">
+          اختر قرابتك من الشخص والمناسبة، لتحصل مباشرة على الدعاء الثابت المناسب له.
+        </p>
+      </div>
 
       <RelationshipDuaFinder relationships={relationships} occasions={occasions} matrix={matrix} />
     </div>

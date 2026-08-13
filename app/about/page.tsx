@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ShieldCheck } from "lucide-react";
 
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { JsonLd } from "@/components/JsonLd";
@@ -24,17 +25,25 @@ export default function AboutPage() {
 
       <Breadcrumbs items={breadcrumbItems} />
 
-      <h1 className="mb-6 mt-3 font-sans text-3xl font-bold text-foreground">عن الموقع</h1>
+      <div className="mb-6 mt-3 flex items-center gap-3">
+        <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary">
+          <ShieldCheck className="size-5" />
+        </span>
+        <h1 className="font-sans text-3xl font-bold text-foreground">عن الموقع</h1>
+      </div>
 
       <div className="prose prose-sm max-w-none space-y-6 text-foreground/85">
-        <p>
+        <p className="rounded-xl border border-primary-100 bg-primary-50/50 p-5 text-foreground/85">
           PrayerFly موقع يجمع الأدعية والأذكار الثابتة عن النبي ﷺ، مع بيان درجة صحة كل نص
           ومصدره، لمن يريد أن يدعو بما ثبت لا بما اشتهر فقط. هذه الصفحة تشرح كيف يُبنى كل نص
           منشور هنا، بالتفصيل لا بعبارات عامة.
         </p>
 
         <section>
-          <h2 className="mb-2 font-sans text-lg font-semibold text-foreground">
+          <h2 className="mb-2 flex items-center gap-2.5 font-sans text-lg font-semibold text-foreground">
+            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary-50 text-xs font-bold text-primary-700">
+              ١
+            </span>
             كيف نتحقق من كل نص
           </h2>
           <p>
@@ -55,7 +64,10 @@ export default function AboutPage() {
         </section>
 
         <section>
-          <h2 className="mb-2 font-sans text-lg font-semibold text-foreground">
+          <h2 className="mb-2 flex items-center gap-2.5 font-sans text-lg font-semibold text-foreground">
+            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary-50 text-xs font-bold text-primary-700">
+              ٢
+            </span>
             عندما تختلف الروايات
           </h2>
           <p>
@@ -70,7 +82,10 @@ export default function AboutPage() {
         </section>
 
         <section>
-          <h2 className="mb-2 font-sans text-lg font-semibold text-foreground">
+          <h2 className="mb-2 flex items-center gap-2.5 font-sans text-lg font-semibold text-foreground">
+            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary-50 text-xs font-bold text-primary-700">
+              ٣
+            </span>
             عندما لا يثبت نص محدد
           </h2>
           <p>
@@ -84,7 +99,10 @@ export default function AboutPage() {
         </section>
 
         <section>
-          <h2 className="mb-2 font-sans text-lg font-semibold text-foreground">
+          <h2 className="mb-2 flex items-center gap-2.5 font-sans text-lg font-semibold text-foreground">
+            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary-50 text-xs font-bold text-primary-700">
+              ٤
+            </span>
             ما لا نفعله
           </h2>
           <p>
@@ -96,7 +114,10 @@ export default function AboutPage() {
         </section>
 
         <section>
-          <h2 className="mb-2 font-sans text-lg font-semibold text-foreground">
+          <h2 className="mb-2 flex items-center gap-2.5 font-sans text-lg font-semibold text-foreground">
+            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary-50 text-xs font-bold text-primary-700">
+              ٥
+            </span>
             إن وجدت خطأ
           </h2>
           <p>

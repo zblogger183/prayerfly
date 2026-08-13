@@ -27,7 +27,7 @@ export function RelationshipDuaFinder({
 
   return (
     <div className="space-y-8">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 rounded-2xl border border-foreground/10 bg-surface p-5 sm:grid-cols-2 sm:p-6">
         <label className="block">
           <span className="mb-1.5 block text-sm font-medium text-foreground/70">
             تدعو لـ...
@@ -66,14 +66,14 @@ export function RelationshipDuaFinder({
       </div>
 
       {result && result.kind !== "none" && (
-        <div className="space-y-4 rounded-xl border border-foreground/10 p-6">
+        <div className="space-y-4 rounded-2xl border border-foreground/10 bg-surface p-6 shadow-soft sm:p-8">
           <p className="text-foreground/85">{result.intro}</p>
 
           <p dir="rtl" className="font-naskh text-2xl leading-loose text-foreground">
             {result.arabic_text_tashkeel}
           </p>
 
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-foreground/10 pt-4">
             <AuthenticityBadge
               grade={result.authenticity_grade}
               narrator={"narrator" in result ? result.narrator : undefined}
@@ -97,7 +97,7 @@ export function RelationshipDuaFinder({
       )}
 
       {result && result.kind === "none" && (
-        <div className="rounded-xl border border-dashed border-foreground/20 p-6 text-center text-foreground/70">
+        <div className="rounded-2xl border border-dashed border-foreground/20 p-6 text-center text-foreground/70">
           <p>لم نضف بعد محتوى موثقًا مخصصًا لهذه الحالة تحديدًا.</p>
           <p className="mt-1 text-sm">
             جرّب مناسبة أخرى، أو تصفح{" "}
