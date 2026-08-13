@@ -3,23 +3,59 @@
 
 :root {
   --background: #ffffff;
+  /* Slightly off-white surface for cards/panels so they read as a distinct
+     layer against the pure-white page without needing a border on every
+     edge — subtle enough to stay "solid white, small deliberate touches"
+     per PROJECT_PLAN.md Section 8, not a colored wash. */
+  --surface: #f8f9f7;
   --foreground: #171717;
-  /* Brand palette (PROJECT_PLAN.md Section 8). White stays dominant
-     everywhere — --background is already pure white, so it doubles as the
-     spec's --color-bg without a second token. Primary is a deliberate
-     solid fill only in small places (footer band, buttons, the sahih
-     badge); secondary is an accent only (dots, chips, underlines, hover
-     rings) — never a background fill or body text color, it's too
-     high-saturation for that. */
-  --primary: #1c4b42;
+
+  /* Brand palette (PROJECT_PLAN.md Section 8), now expanded into a full
+     tint/shade ramp so components can reach for e.g. --primary-50 as a soft
+     chip background or --primary-700 as a hover state instead of only
+     opacity-modified foreground/primary. --primary-600 IS the original
+     single --primary value — nothing that already referenced --primary
+     changes color. Secondary stays a two-stop accent ramp only (a pale tint
+     for chip backgrounds, a darkened "ink" for text-on-lime) — still never
+     a background fill or body-text color at full saturation. */
+  --primary-50: #f0f7f5;
+  --primary-100: #dbeae5;
+  --primary-200: #b6d5cb;
+  --primary-300: #8bb9ac;
+  --primary-400: #5c9584;
+  --primary-500: #2f705f;
+  --primary-600: #1c4b42;
+  --primary-700: #163b34;
+  --primary-800: #112e28;
+  --primary-900: #0b201c;
+  --primary: var(--primary-600);
+
   --secondary: #b4e717;
+  --secondary-100: #f3fbd6;
+  --secondary-600: #6b8a0d;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-foreground: var(--foreground);
+
+  --color-primary-50: var(--primary-50);
+  --color-primary-100: var(--primary-100);
+  --color-primary-200: var(--primary-200);
+  --color-primary-300: var(--primary-300);
+  --color-primary-400: var(--primary-400);
+  --color-primary-500: var(--primary-500);
+  --color-primary-600: var(--primary-600);
+  --color-primary-700: var(--primary-700);
+  --color-primary-800: var(--primary-800);
+  --color-primary-900: var(--primary-900);
   --color-primary: var(--primary);
+
   --color-secondary: var(--secondary);
+  --color-secondary-100: var(--secondary-100);
+  --color-secondary-600: var(--secondary-600);
+
   --font-sans: var(--font-sans-arabic);
   --font-naskh: var(--font-naskh);
 }
@@ -27,14 +63,42 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
+    --surface: #131513;
     --foreground: #ededed;
     /* Same hue/saturation as light mode, lightness raised so it stays
        legible against a near-black surface — not a separate palette. */
-    --primary: #3b9b89;
+    --primary-600: #3b9b89;
+    --primary: var(--primary-600);
+    --primary-50: #102420;
+    --primary-100: #15332c;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--secondary) 45%, transparent);
+  color: var(--primary-900);
+}
+
+/* Soft, brand-tinted elevation instead of default flat gray shadows — used
+   sparingly on cards that need to read as "raised" (hero panels, dua action
+   card) rather than every bordered box on the site. */
+@utility shadow-soft {
+  box-shadow:
+    0 1px 2px rgba(17, 24, 21, 0.04),
+    0 6px 20px -8px rgba(28, 75, 66, 0.16);
+}
+
+@utility shadow-soft-lg {
+  box-shadow:
+    0 4px 12px rgba(17, 24, 21, 0.05),
+    0 20px 48px -16px rgba(28, 75, 66, 0.24);
 }
