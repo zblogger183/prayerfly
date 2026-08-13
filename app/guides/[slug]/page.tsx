@@ -67,7 +67,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
   ];
 
   return (
-    <div dir="rtl" className="mx-auto max-w-3xl px-6 py-12">
+    <div dir="rtl" className="mx-auto max-w-4xl px-6 py-12">
       <JsonLd data={howToSchema(guide)} />
       <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
       <JsonLd data={faqSchema(guide.faq)} />
@@ -76,39 +76,40 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
 
       <h1 className="mb-4 mt-3 font-sans text-3xl font-bold text-primary">{guide.title}</h1>
 
-      <p className="mb-8 rounded-lg bg-foreground/[0.03] p-4 text-base leading-relaxed text-foreground/85">
-        {guide.quick_answer}
-      </p>
+      <div className="mb-8 rounded-xl border border-primary-100 bg-primary-50/50 p-5">
+        <p className="mb-1.5 text-xs font-semibold tracking-wide text-primary-700">
+          الإجابة السريعة
+        </p>
+        <p className="text-base leading-relaxed text-foreground/85">{guide.quick_answer}</p>
+      </div>
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-[1fr_14rem]">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-[1fr_15rem]">
         <div className="space-y-10">
           <section id="steps" className="scroll-mt-20">
-            <ol className="space-y-8">
+            {/* Stepper: a connecting rail behind the numbered circles, same
+                idea as a checkout/onboarding stepper — this is a
+                step-by-step guide, so the sequence itself is content. */}
+            <ol className="relative space-y-8 before:absolute before:inset-y-0 before:right-3.5 before:w-px before:bg-foreground/10">
               {guide.steps.map((step) => {
                 const associatedDua = step.associated_dua_slug
                   ? getDua(step.associated_dua_slug)
                   : null;
 
                 return (
-                  <li
-                    key={step.order}
-                    className="space-y-3 border-b border-foreground/10 pb-8 last:border-0"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
-                        {step.order}
-                      </span>
-                      <h3 className="font-sans text-lg font-semibold text-foreground">
-                        {step.step_title}
-                      </h3>
+                  <li key={step.order} className="relative space-y-3 ps-10">
+                    <div className="absolute start-0 top-0 flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
+                      {step.order}
                     </div>
+                    <h3 className="font-sans text-lg font-semibold text-foreground">
+                      {step.step_title}
+                    </h3>
 
                     <div className="prose prose-sm max-w-none text-foreground/85">
                       <MDXRemote source={step.step_description} />
                     </div>
 
                     {associatedDua && (
-                      <div className="space-y-2 rounded-lg border border-foreground/10 p-4">
+                      <div className="space-y-2 rounded-xl border border-foreground/10 bg-surface p-4">
                         <p dir="rtl" className="font-naskh text-xl leading-loose text-foreground">
                           {associatedDua.arabic_text_plain}
                         </p>
@@ -125,7 +126,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
                     )}
 
                     {step.inline_dua_text && (
-                      <div className="space-y-2 rounded-lg border border-foreground/10 p-4">
+                      <div className="space-y-2 rounded-xl border border-foreground/10 bg-surface p-4">
                         <p dir="rtl" className="font-naskh text-xl leading-loose text-foreground">
                           {step.inline_dua_text}
                         </p>

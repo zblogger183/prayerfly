@@ -26,15 +26,27 @@ export function DuaActions({ textTashkeel, textPlain, title, slug, audioUrl }: D
   const [showTashkeel, setShowTashkeel] = usePersistedTashkeelPreference();
 
   return (
-    <div className="space-y-4">
-      <TashkeelToggle value={showTashkeel} onChange={setShowTashkeel} />
-      <DuaText text={textTashkeel} showTashkeel={showTashkeel} />
-      <div className="flex flex-wrap items-center gap-2">
+    <div className="overflow-hidden rounded-2xl border border-foreground/10 bg-surface shadow-soft">
+      <div className="flex items-center justify-between gap-3 border-b border-foreground/10 px-5 py-3 sm:px-6">
+        <span className="text-xs font-semibold tracking-wide text-foreground/40">نص الدعاء</span>
+        <TashkeelToggle value={showTashkeel} onChange={setShowTashkeel} />
+      </div>
+
+      <div className="px-5 py-8 sm:px-6 sm:py-10">
+        <DuaText text={textTashkeel} showTashkeel={showTashkeel} />
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2 border-t border-foreground/10 bg-background px-5 py-4 sm:px-6">
         <CopyButton text={textPlain} />
         <ShareImageButton text={textPlain} title={title} fileName={slug} />
         <BookmarkButton slug={slug} />
       </div>
-      <AudioPlayer audioUrl={audioUrl} />
+
+      {audioUrl && (
+        <div className="border-t border-foreground/10 px-5 py-4 sm:px-6">
+          <AudioPlayer audioUrl={audioUrl} />
+        </div>
+      )}
     </div>
   );
 }

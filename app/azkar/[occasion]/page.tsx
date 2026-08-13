@@ -71,7 +71,7 @@ export default async function AdhkarPage({
   const uniqueSources = [...new Set(collection.items.map((item) => item.primary_source))];
 
   return (
-    <div dir="rtl" className="mx-auto max-w-3xl px-6 py-12">
+    <div dir="rtl" className="mx-auto max-w-4xl px-6 py-12">
       <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
       <JsonLd data={faqSchema(collection.faq)} />
 
@@ -79,11 +79,14 @@ export default async function AdhkarPage({
 
       <h1 className="mb-4 mt-3 font-sans text-3xl font-bold text-primary">{collection.title}</h1>
 
-      <p className="mb-8 rounded-lg bg-foreground/[0.03] p-4 text-base leading-relaxed text-foreground/85">
-        {collection.quick_answer}
-      </p>
+      <div className="mb-8 rounded-xl border border-primary-100 bg-primary-50/50 p-5">
+        <p className="mb-1.5 text-xs font-semibold tracking-wide text-primary-700">
+          الإجابة السريعة
+        </p>
+        <p className="text-base leading-relaxed text-foreground/85">{collection.quick_answer}</p>
+      </div>
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-[1fr_14rem]">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-[1fr_15rem]">
         <div className="space-y-10">
           <section id="items" className="scroll-mt-20">
             <AdhkarItemsList items={collection.items} />

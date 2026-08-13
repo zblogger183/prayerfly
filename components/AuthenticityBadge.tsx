@@ -1,26 +1,43 @@
+import {
+  HelpCircle,
+  ShieldAlert,
+  ShieldCheck,
+  ShieldHalf,
+  ShieldQuestion,
+  type LucideIcon,
+} from "lucide-react";
 import type { Dua } from "@/lib/schema";
 
 type Grade = Dua["authenticity_grade"];
 
-const GRADE_STYLES: Record<Grade, { label: string; className: string }> = {
+const GRADE_STYLES: Record<Grade, { label: string; className: string; icon: LucideIcon }> = {
   // The one grade allowed to carry brand color (PROJECT_PLAN.md Section 8):
   // solid primary fill, white text.
-  sahih: { label: "صحيح", className: "border-primary bg-primary text-white" },
+  sahih: { label: "صحيح", className: "border-primary bg-primary text-white", icon: ShieldCheck },
   // Deliberately NOT brand green or amber — hasan needs to stay visually
   // distinct from both "the on-brand best case" (sahih) and "the warning
-  // case" (daif), so a citation's grade never reads as brand styling.
-  hasan: { label: "حسن", className: "bg-teal-100 text-teal-800 border-teal-300" },
+  // case" (daif), so a citation's grade never reads as brand styling. A
+  // different icon (half-filled shield) reinforces "partial confidence"
+  // rather than just relying on color alone.
+  hasan: { label: "حسن", className: "bg-teal-100 text-teal-800 border-teal-300", icon: ShieldHalf },
   // Amber regardless of the brand palette — a weak grade should never look
   // like a positive, on-brand result by borrowing primary/secondary.
-  daif: { label: "ضعيف", className: "bg-amber-100 text-amber-800 border-amber-300" },
-  mixed: { label: "متفاوت", className: "bg-zinc-100 text-zinc-700 border-zinc-300" },
+  daif: { label: "ضعيف", className: "bg-amber-100 text-amber-800 border-amber-300", icon: ShieldAlert },
+  mixed: {
+    label: "متفاوت",
+    className: "bg-zinc-100 text-zinc-700 border-zinc-300",
+    icon: ShieldQuestion,
+  },
   // Not a hadith grade at all — e.g. دعاء ختم القرآن, a scholarly-compiled
   // or companion-practice text with no single fixed prophetic wording.
   // Slate rather than mixed's zinc so it doesn't read as "just another
-  // shade of gray" next to a real (if contested) hadith grade.
+  // shade of gray" next to a real (if contested) hadith grade, and a plain
+  // circle icon (not a shield at all) so it doesn't visually imply "a weak
+  // hadith grade" the way ShieldQuestion/ShieldAlert would.
   no_fixed_hadith: {
     label: "دعاء مأثور، وليس حديثًا نبويًا ثابتًا",
     className: "bg-slate-100 text-slate-700 border-slate-300",
+    icon: HelpCircle,
   },
 };
 
@@ -48,15 +65,16 @@ const COMPACT_LABELS: Partial<Record<Grade, string>> = {
  * this stays a plain server component.
  */
 export function AuthenticityBadge({ grade, narrator, source, compact = false }: AuthenticityBadgeProps) {
-  const { label, className } = GRADE_STYLES[grade];
+  const { label, className, icon: Icon } = GRADE_STYLES[grade];
   const displayLabel = compact ? (COMPACT_LABELS[grade] ?? label) : label;
 
   return (
     <span className="group relative inline-flex">
       <span
         tabIndex={0}
-        className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-sm font-medium ${compact ? "whitespace-nowrap" : ""} ${className}`}
+        className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium ${compact ? "whitespace-nowrap" : ""} ${className}`}
       >
+        <Icon className="size-3.5 shrink-0" />
         {displayLabel}
       </span>
       <span

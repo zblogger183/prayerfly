@@ -1,3 +1,5 @@
+import { ChevronDown } from "lucide-react";
+
 export interface FaqItem {
   q: string;
   a: string;
@@ -16,18 +18,16 @@ interface FaqAccordionProps {
  */
 export function FaqAccordion({ items }: FaqAccordionProps) {
   return (
-    <div className="divide-y divide-foreground/10 rounded-lg border border-foreground/10">
+    <div className="divide-y divide-foreground/10 overflow-hidden rounded-xl border border-foreground/10">
       {items.map((item, i) => (
-        <details key={i} className="group p-4">
-          <summary className="cursor-pointer list-none font-medium text-foreground marker:content-none">
+        <details key={i} className="group bg-background open:bg-surface">
+          <summary className="cursor-pointer list-none px-4 py-3.5 font-medium text-foreground marker:content-none">
             <span className="flex items-center justify-between gap-4">
               {item.q}
-              <span className="shrink-0 text-foreground/40 transition-transform group-open:rotate-45">
-                +
-              </span>
+              <ChevronDown className="size-4 shrink-0 text-foreground/40 transition-transform group-open:rotate-180" />
             </span>
           </summary>
-          <p className="mt-2 text-sm leading-relaxed text-foreground/70">{item.a}</p>
+          <p className="px-4 pb-4 text-sm leading-relaxed text-foreground/70">{item.a}</p>
         </details>
       ))}
     </div>

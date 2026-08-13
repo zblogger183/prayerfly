@@ -56,7 +56,12 @@ export default async function PillarHubPage({
 
       <Breadcrumbs items={breadcrumbItems} />
 
-      <h1 className="mb-2 mt-3 font-sans text-3xl font-bold text-primary">{hub.pillarName}</h1>
+      <div className="mb-6 mt-3 flex flex-wrap items-center gap-3">
+        <h1 className="font-sans text-3xl font-bold text-primary">{hub.pillarName}</h1>
+        <span className="rounded-full bg-primary-50 px-3 py-1 text-sm font-medium text-primary-700">
+          {items.length === 1 ? "دعاء واحد" : `${items.length} أدعية`}
+        </span>
+      </div>
 
       {hub.introMarkdown ? (
         <div className="prose prose-sm mb-8 max-w-none text-foreground/85">

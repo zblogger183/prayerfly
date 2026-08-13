@@ -21,7 +21,7 @@ export function AdSlot({ size = "rectangle" }: AdSlotProps) {
   return (
     <div
       style={{ width, height, maxWidth: "100%" }}
-      className="mx-auto flex items-center justify-center rounded-lg border border-dashed border-foreground/20 bg-foreground/[0.03] text-xs text-foreground/40"
+      className="mx-auto flex items-center justify-center rounded-xl border border-dashed border-foreground/20 bg-surface text-xs text-foreground/40"
     >
       مساحة إعلانية · {width}×{height}
     </div>

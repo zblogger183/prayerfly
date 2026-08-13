@@ -19,7 +19,7 @@ export function RelatedDuas({ items }: RelatedDuasProps) {
         <Link
           key={item.slug}
           href={`/دعاء/${item.pillar}/${item.slug}`}
-          className="rounded-lg border border-foreground/10 p-4 transition-colors hover:border-primary/40 hover:bg-foreground/[0.03] hover:ring-1 hover:ring-secondary/50"
+          className="rounded-xl border border-foreground/10 bg-surface p-4 transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-soft"
         >
           <span className="block font-medium text-foreground">{item.title}</span>
         </Link>

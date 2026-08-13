@@ -19,12 +19,18 @@ export function TOC({ items }: TOCProps) {
   if (items.length === 0) return null;
 
   return (
-    <nav aria-label="محتويات الصفحة" className="rounded-lg border border-foreground/10 p-4 text-sm">
-      <p className="mb-2 font-medium text-foreground/80">في هذه الصفحة</p>
-      <ol className="space-y-1.5">
+    <nav
+      aria-label="محتويات الصفحة"
+      className="rounded-xl border border-foreground/10 bg-surface p-4 text-sm"
+    >
+      <p className="mb-3 text-xs font-semibold tracking-wide text-foreground/40">في هذه الصفحة</p>
+      <ol className="space-y-0.5 border-e-2 border-foreground/10">
         {items.map((item) => (
           <li key={item.id}>
-            <a href={`#${item.id}`} className="text-foreground/60 hover:text-primary hover:underline">
+            <a
+              href={`#${item.id}`}
+              className="-me-0.5 block border-e-2 border-transparent px-3 py-1.5 text-foreground/60 transition-colors hover:border-primary hover:text-primary"
+            >
               {item.label}
             </a>
           </li>

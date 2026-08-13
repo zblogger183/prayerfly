@@ -81,7 +81,7 @@ export function BookmarkButton({ slug }: BookmarkButtonProps) {
       type="button"
       onClick={() => toggleBookmark(slug)}
       aria-pressed={bookmarked}
-      className="inline-flex items-center gap-1.5 rounded-lg border border-foreground/15 px-3 py-1.5 text-sm text-foreground/80 transition-colors hover:border-primary/30 hover:bg-foreground/5"
+      className="inline-flex items-center gap-1.5 rounded-full border border-foreground/15 bg-background px-3.5 py-2 text-sm font-medium text-foreground/80 transition-colors hover:border-primary/30 hover:bg-primary-50 hover:text-primary"
     >
       {bookmarked ? (
         <BookmarkCheck className="size-4 text-primary" />

@@ -17,18 +17,20 @@ export function AdhkarItemsList({ items }: { items: AdhkarItem[] }) {
   return (
     <div className="space-y-6">
       <TashkeelToggle value={showTashkeel} onChange={setShowTashkeel} />
-      <ol className="space-y-8">
+      <ol className="space-y-4">
         {items.map((item) => (
           <li
             key={item.order}
-            className="space-y-3 border-b border-foreground/10 pb-6 last:border-0"
+            className="space-y-4 rounded-2xl border border-foreground/10 bg-surface p-5 sm:p-6"
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="text-sm font-medium text-foreground/50">#{item.order}</span>
+              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary-50 text-sm font-semibold text-primary-700">
+                {item.order}
+              </span>
               <AuthenticityBadge grade={item.authenticity_grade} source={item.primary_source} />
             </div>
             <DuaText text={item.arabic_text_tashkeel} showTashkeel={showTashkeel} />
-            <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-foreground/70">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-foreground/10 pt-4 text-sm text-foreground/70">
               {item.repetition_count && <span>{item.repetition_count}</span>}
               <CopyButton text={item.arabic_text_plain} />
             </div>

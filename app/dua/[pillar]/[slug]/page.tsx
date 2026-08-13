@@ -96,7 +96,7 @@ export default async function DuaPage({
   ];
 
   return (
-    <div dir="rtl" className="mx-auto max-w-3xl px-6 py-12">
+    <div dir="rtl" className="mx-auto max-w-4xl px-6 py-12">
       <JsonLd data={articleSchema(dua, canonicalPath)} />
       <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
       <JsonLd data={faqSchema(dua.faq)} />
@@ -109,11 +109,14 @@ export default async function DuaPage({
       </h1>
 
       {/* 2. Quick-answer block */}
-      <p className="mb-8 rounded-lg bg-foreground/[0.03] p-4 text-base leading-relaxed text-foreground/85">
-        {dua.quick_answer}
-      </p>
+      <div className="mb-8 rounded-xl border border-primary-100 bg-primary-50/50 p-5">
+        <p className="mb-1.5 text-xs font-semibold tracking-wide text-primary-700">
+          الإجابة السريعة
+        </p>
+        <p className="text-base leading-relaxed text-foreground/85">{dua.quick_answer}</p>
+      </div>
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-[1fr_14rem]">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-[1fr_15rem]">
         <div className="space-y-10">
           {/* 3. The dua itself */}
           <DuaActions
@@ -125,25 +128,25 @@ export default async function DuaPage({
           />
 
           {/* 4. Authenticity block */}
-          <section id="authenticity" className="scroll-mt-20 space-y-2">
+          <section id="authenticity" className="scroll-mt-20 space-y-3">
             <h2 className="font-sans text-lg font-semibold text-primary">درجة الصحة</h2>
-            <AuthenticityBadge
-              grade={dua.authenticity_grade}
-              narrator={dua.narrator}
-              source={dua.primary_source}
-            />
-            {dua.source_url && (
-              <p className="text-sm">
+            <div className="flex flex-col gap-3 rounded-xl border border-foreground/10 bg-surface p-4 sm:flex-row sm:items-center sm:justify-between">
+              <AuthenticityBadge
+                grade={dua.authenticity_grade}
+                narrator={dua.narrator}
+                source={dua.primary_source}
+              />
+              {dua.source_url && (
                 <a
                   href={dua.source_url}
                   target="_blank"
                   rel="noopener noreferrer nofollow"
-                  className="text-primary hover:underline"
+                  className="text-sm font-medium text-primary hover:underline"
                 >
-                  التخريج الكامل
+                  التخريج الكامل ←
                 </a>
-              </p>
-            )}
+              )}
+            </div>
           </section>
 
           {/* 5. When / how many times to say it */}
@@ -169,8 +172,8 @@ export default async function DuaPage({
             <section id="variants" className="scroll-mt-20 space-y-3">
               <h2 className="font-sans text-lg font-semibold text-primary">صيغ أخرى</h2>
               {dua.variants.map((variant) => (
-                <div key={variant.label}>
-                  <p className="mb-1 text-sm font-medium text-foreground/60">{variant.label}</p>
+                <div key={variant.label} className="rounded-xl border border-foreground/10 bg-surface p-4">
+                  <p className="mb-1.5 text-sm font-medium text-foreground/60">{variant.label}</p>
                   <p dir="rtl" className="font-naskh text-xl leading-loose text-foreground">
                     {variant.text}
                   </p>
