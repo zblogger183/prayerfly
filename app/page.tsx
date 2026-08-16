@@ -133,7 +133,12 @@ export default function Home() {
               <span aria-hidden="true" className="h-1 w-10 rounded-full bg-secondary" />
             </div>
           </div>
-          <p className="font-sans text-lg text-white/85">أدعية موثقة بإسناد صحيح</p>
+          {/* The page's only h1 — was a <p>, so the homepage had zero h1
+              tags site-wide. This text (not the "PrayerFly" brand span
+              above it) carries the actual on-page keyword intent, matching
+              the meta title/description set above; kept visually identical
+              to before, only the tag changed. */}
+          <h1 className="font-sans text-lg font-normal text-white/85">أدعية موثقة بإسناد صحيح</h1>
 
           <p className="font-naskh max-w-md text-2xl leading-loose text-white">
             بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ
