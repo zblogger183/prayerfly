@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { BookOpenCheck, Compass, Library, ShieldCheck } from "lucide-react";
 
@@ -7,10 +8,9 @@ import { AuthenticityBadge } from "@/components/AuthenticityBadge";
 import { GeometricPattern } from "@/components/GeometricPattern";
 import { HomeSearch, HomeSearchWithQuery } from "@/components/HomeSearch";
 import { JsonLd } from "@/components/JsonLd";
-import { Logo } from "@/components/Logo";
 import { truncateForMeta } from "@/lib/arabic";
 import { getAllPillarHubs, getBuildableEntries, getDua, slugifyPillar } from "@/lib/content";
-import { getPillarStyle } from "@/lib/pillar-style";
+import { getPillarIcon } from "@/lib/pillar-style";
 import { getSearchIndex } from "@/lib/search-index";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
 
@@ -118,8 +118,13 @@ export default function Home() {
 
         <div className="relative mx-auto flex max-w-2xl flex-col items-center gap-6">
           <div className="flex flex-col items-center gap-3">
-            <span className="flex size-16 items-center justify-center rounded-2xl bg-white/15 shadow-soft-lg backdrop-blur-sm">
-              <Logo className="size-9 text-white" />
+            {/* Solid white (not the translucent bg-white/15 this used
+                before swapping in the real icon) — the icon's line art is a
+                fixed brand dark-green raster, not a recolorable currentColor
+                SVG, so it needs real contrast against the gradient, not a
+                tint of it. */}
+            <span className="flex size-16 items-center justify-center rounded-2xl bg-white shadow-soft-lg">
+              <Image src="/logo-icon.png" alt="" width={40} height={40} className="size-10" priority />
             </span>
             <div className="flex flex-col items-center gap-2">
               <span className="font-sans text-3xl font-bold tracking-tight text-white sm:text-4xl">
@@ -191,17 +196,15 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
             {pillars.slice(0, 12).map((pillar) => {
-              const style = getPillarStyle(pillar.pillarSlug);
+              const Icon = getPillarIcon(pillar.pillarSlug);
               return (
                 <Link
                   key={pillar.pillarSlug}
                   href={`/دعاء/${pillar.pillarSlug}`}
-                  className={`group flex flex-col gap-3 rounded-2xl border border-foreground/10 bg-background p-4 shadow-soft transition-all hover:-translate-y-1 hover:shadow-soft-lg ${style.cardHover}`}
+                  className="group flex flex-col gap-3 rounded-2xl border border-foreground/10 bg-background p-4 shadow-soft transition-all hover:-translate-y-1 hover:border-primary/30 hover:shadow-soft-lg"
                 >
-                  <span
-                    className={`flex size-10 items-center justify-center rounded-xl ${style.iconBg} ${style.iconText}`}
-                  >
-                    <style.icon className="size-5" />
+                  <span className="flex size-10 items-center justify-center rounded-xl bg-primary-50 text-primary">
+                    <Icon className="size-5" />
                   </span>
                   <div className="flex flex-col gap-1">
                     <span className="font-medium text-foreground group-hover:text-primary">

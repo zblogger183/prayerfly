@@ -1,5 +1,5 @@
+import Image from "next/image";
 import Link from "next/link";
-import { Logo } from "@/components/Logo";
 
 const BROWSE_LINKS = [
   { label: "تصفح الأدعية", href: "/دعاء" },
@@ -22,7 +22,14 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-[1.3fr_1fr_1fr]">
           <div className="flex flex-col items-start gap-3">
             <Link href="/" className="flex items-center gap-2">
-              <Logo className="size-7 text-white" />
+              {/* The icon's own line art is a fixed brand dark-green (a
+                  raster mark, not a currentColor SVG) — it would vanish
+                  against this footer's solid green background without a
+                  light badge behind it, same reasoning as the OG-image
+                  card's icon treatment. */}
+              <span className="flex size-8 items-center justify-center rounded-full bg-white">
+                <Image src="/logo-icon.png" alt="" width={20} height={20} className="size-5" />
+              </span>
               <span className="font-sans text-lg font-semibold tracking-tight text-white">
                 PrayerFly
               </span>

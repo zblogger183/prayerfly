@@ -1,8 +1,8 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Bookmark } from "lucide-react";
 import { HomeSearch, HomeSearchWithQuery } from "@/components/HomeSearch";
-import { Logo } from "@/components/Logo";
 import { MobileNav } from "@/components/MobileNav";
 import { getSearchIndex } from "@/lib/search-index";
 
@@ -35,7 +35,7 @@ export function Header() {
     <header className="sticky top-0 z-30 border-b border-foreground/10 bg-background/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <Link href="/" className="flex shrink-0 items-center gap-2">
-          <Logo className="size-7 text-primary" />
+          <Image src="/logo-icon.png" alt="" width={28} height={28} className="size-7" priority />
           <span className="font-sans text-xl font-semibold tracking-tight text-primary">
             PrayerFly
           </span>
