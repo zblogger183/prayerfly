@@ -104,7 +104,12 @@ export default async function DuaPage({
 
   return (
     <div dir="rtl" className="mx-auto max-w-4xl px-6 py-12">
-      <JsonLd data={articleSchema(dua, canonicalPath)} />
+      <JsonLd
+        data={articleSchema(
+          { headline: dua.primary_keyword, quick_answer: dua.quick_answer, last_updated: dua.last_updated },
+          canonicalPath
+        )}
+      />
       <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
       <JsonLd data={faqSchema(dua.faq)} />
 

@@ -10,7 +10,7 @@ import { TOC, type TOCItem } from "@/components/TOC";
 import { getAdhkarCollection, getAllAdhkarSlugs } from "@/lib/adhkar";
 import { decodeSlug, getRelatedDuas } from "@/lib/content";
 import { truncateForMeta, truncateForTitle } from "@/lib/arabic";
-import { breadcrumbSchema, faqSchema } from "@/lib/schema";
+import { articleSchema, breadcrumbSchema, faqSchema } from "@/lib/schema";
 import { AdhkarItemsList } from "./AdhkarItemsList";
 
 // Physically lives at /azkar/[occasion] (ASCII), same reason as every
@@ -60,6 +60,7 @@ export default async function AdhkarPage({
   ];
 
   const relatedDuas = getRelatedDuas(collection);
+  const canonicalPath = `/اذكار/${collection.slug}`;
 
   const tocItems: TOCItem[] = [
     { id: "items", label: "الأذكار" },
@@ -72,6 +73,12 @@ export default async function AdhkarPage({
 
   return (
     <div dir="rtl" className="mx-auto max-w-4xl px-6 py-12">
+      <JsonLd
+        data={articleSchema(
+          { headline: collection.title, quick_answer: collection.quick_answer, last_updated: collection.last_updated },
+          canonicalPath
+        )}
+      />
       <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
       <JsonLd data={faqSchema(collection.faq)} />
 

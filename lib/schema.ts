@@ -149,16 +149,27 @@ export function howToSchema(guide: Guide) {
  * set equal to dateModified (last_updated) rather than invented — the
  * schema only ever tracked one date, not a separate original-publish date.
  */
-export function articleSchema(dua: Dua, canonicalPath: string) {
+/**
+ * Takes the minimal shape rather than `Dua` specifically — same reasoning
+ * as getRelatedDuas's generalization in lib/content.ts — so adhkar
+ * collections (which have no `primary_keyword`, just `title`) can produce
+ * Article JSON-LD too, not only dua pages. `headline` is passed
+ * pre-resolved by the caller (dua pages use primary_keyword to match their
+ * H1; adhkar collections use title, their only headline-shaped field).
+ */
+export function articleSchema(
+  entry: { headline: string; quick_answer: string; last_updated: string },
+  canonicalPath: string
+) {
   const publisher = { "@type": "Organization", name: SITE_NAME, url: SITE_URL };
   return {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: dua.primary_keyword,
-    description: dua.quick_answer,
+    headline: entry.headline,
+    description: entry.quick_answer,
     inLanguage: "ar",
-    datePublished: dua.last_updated,
-    dateModified: dua.last_updated,
+    datePublished: entry.last_updated,
+    dateModified: entry.last_updated,
     mainEntityOfPage: absoluteUrl(canonicalPath),
     author: publisher,
     publisher,
