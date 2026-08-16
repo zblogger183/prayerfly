@@ -132,20 +132,34 @@ export function getPillarSchemaEntry(pillarSlug: string): Pillar | null {
 }
 
 /**
- * Same "only what's actually written" rule as getBuildableEntries: a hub
- * page only lists/exists for pillars that have at least one real dua page
- * OR a hand-authored content/pillars/*.json entry — not every pillar the
- * Sprint 2 classifier happened to assign.
+ * A hub page's children are always computed live from content/duas/ (every
+ * dua whose own `pillar` field slugifies to this hub), never from a stored
+ * list — a stored `child_slugs` list (the previous approach) goes stale
+ * the moment a new dua is added under an existing pillar and nobody
+ * remembers to also edit that pillar's JSON file, silently orphaning the
+ * new dua from its own hub page even though the dua page itself works
+ * fine. `PillarSchema.child_slugs` still exists for older records but is
+ * intentionally ignored here.
+ */
+function getPillarChildren(pillarSlug: string): { title: string; slug: string }[] {
+  return getAllDuaSlugs()
+    .map((slug) => getDua(slug))
+    .filter((dua): dua is Dua => dua !== null && slugifyPillar(dua.pillar) === pillarSlug)
+    .map((dua) => ({ title: dua.title, slug: dua.slug }));
+}
+
+/**
+ * A hub page only lists/exists for pillars that have at least one real dua
+ * page OR a hand-authored content/pillars/*.json entry (for a pillar with
+ * a curated intro but, transiently, zero duas — not currently the case for
+ * any real pillar, but the schema entry alone is enough to render one).
  */
 export function getPillarHub(pillarSlug: string): PillarHub | null {
   const decoded = decodeSlug(pillarSlug);
   const schemaEntry = getPillarSchemaEntry(decoded);
+  const children = getPillarChildren(decoded);
 
   if (schemaEntry) {
-    const children = schemaEntry.child_slugs
-      .map((slug) => getDua(slug))
-      .filter((dua): dua is Dua => dua !== null)
-      .map((dua) => ({ title: dua.title, slug: dua.slug }));
     return {
       pillarName: schemaEntry.title,
       pillarSlug: decoded,
@@ -155,21 +169,19 @@ export function getPillarHub(pillarSlug: string): PillarHub | null {
     };
   }
 
-  const autoEntries = getBuildableEntries().filter(
-    (entry) => slugifyPillar(entry.pillar) === decoded
-  );
-  if (autoEntries.length === 0) return null;
+  if (children.length === 0) return null;
   return {
-    pillarName: autoEntries[0].pillar,
+    pillarName: children[0] ? getDua(children[0].slug)!.pillar : decoded,
     pillarSlug: decoded,
-    children: autoEntries.map((entry) => ({ title: entry.canonical_topic, slug: entry.slug })),
+    children,
   };
 }
 
 export function getAllPillarHubs(): PillarHub[] {
   const slugs = new Set<string>();
-  for (const entry of getBuildableEntries()) {
-    slugs.add(slugifyPillar(entry.pillar));
+  for (const slug of getAllDuaSlugs()) {
+    const dua = getDua(slug);
+    if (dua) slugs.add(slugifyPillar(dua.pillar));
   }
   if (existsSync(PILLARS_DIR)) {
     for (const file of readdirSync(PILLARS_DIR)) {

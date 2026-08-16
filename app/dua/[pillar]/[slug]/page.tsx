@@ -10,7 +10,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { RelatedDuas } from "@/components/RelatedDuas";
 import { TOC, type TOCItem } from "@/components/TOC";
 import { truncateForMeta, truncateForTitle } from "@/lib/arabic";
-import { decodeSlug, getBuildableEntries, getDua, getRelatedDuas, slugifyPillar } from "@/lib/content";
+import { decodeSlug, getAllDuaSlugs, getDua, getRelatedDuas, slugifyPillar } from "@/lib/content";
 import { articleSchema, breadcrumbSchema, faqSchema } from "@/lib/schema";
 import { DuaActions } from "./DuaActions";
 
@@ -27,11 +27,24 @@ import { DuaActions } from "./DuaActions";
 
 export const revalidate = 604800; // weekly ISR
 
+// Was getBuildableEntries() (content-plan.json phase 1/2 entries only) —
+// silently excluded any dua added outside the tracked keyword plan (the
+// "known-topic search" strategy used throughout this project added most of
+// the collection that way). That left 171 of 262 real dua files — 65% of
+// the collection — never statically generated, never in the sitemap
+// (lib/sitemap.ts had the same bug), and unsearchable via the homepage
+// search box (lib/search-index.ts had it too, third occurrence). Fixed at
+// the source here: getAllDuaSlugs() scans content/duas/ directly, so it's
+// impossible for a real file to be excluded regardless of whether it was
+// ever a tracked keyword-plan entry.
 export async function generateStaticParams() {
-  return getBuildableEntries().map((entry) => ({
-    pillar: slugifyPillar(entry.pillar),
-    slug: entry.slug,
-  }));
+  return getAllDuaSlugs()
+    .map((slug) => getDua(slug))
+    .filter((dua) => dua !== null)
+    .map((dua) => ({
+      pillar: slugifyPillar(dua.pillar),
+      slug: dua.slug,
+    }));
 }
 
 export async function generateMetadata({

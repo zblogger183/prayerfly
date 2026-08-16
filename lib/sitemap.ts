@@ -1,4 +1,4 @@
-import { getAllPillarHubs, getBuildableEntries, getDua, slugifyPillar } from "@/lib/content";
+import { getAllDuaSlugs, getAllPillarHubs, getDua, slugifyPillar } from "@/lib/content";
 import { getAllAdhkarSlugs, getAdhkarCollection } from "@/lib/adhkar";
 import { getAllGuideSlugs, getGuide } from "@/lib/guides";
 
@@ -10,13 +10,21 @@ export interface SitemapEntry {
 }
 
 /**
- * All indexable URLs across every content type — Phase 1 + Phase 2 duas
- * (`getBuildableEntries` already gates on phase/file existence; each entry
- * is re-checked against its own `index` field here, since a real file can
- * still be individually noindexed), pillar hubs, adhkar collections, guides,
- * and the static trust pages.
+ * All indexable URLs across every content type — every real dua file
+ * (`getAllDuaSlugs()` scans content/duas/ directly; each is individually
+ * gated on its own `index` field, since a real file can still be
+ * noindexed), pillar hubs, adhkar collections, guides, and the static
+ * trust pages.
  *
- * Currently returned as one flat array from `app/sitemap.ts` — at ~30 URLs
+ * Was built from `getBuildableEntries()` (content-plan.json phase 1/2
+ * entries) instead — silently omitted every dua added outside the
+ * tracked keyword plan, which turned out to be 171 of 262 real dua pages
+ * (65% of the collection) once "known-topic search" became the primary
+ * way new duas were found. A sitemap that lists a third of the real
+ * content isn't a rounding error, it's most of the site being invisible
+ * to search-engine discovery.
+ *
+ * Currently returned as one flat array from `app/sitemap.ts` — at ~300 URLs
  * we're nowhere near Google's 50,000-per-file limit. Kept as a single
  * function (rather than inlined in app/sitemap.ts) so that switching to
  * Next's `generateSitemaps` chunking later is a matter of `chunk(getSitemapEntries(), 45_000)`
@@ -35,8 +43,8 @@ export function getSitemapEntries(): SitemapEntry[] {
     entries.push({ url: `${SITE_URL}/دعاء/${hub.pillarSlug}`, lastModified: today });
   }
 
-  for (const planEntry of getBuildableEntries()) {
-    const dua = getDua(planEntry.slug);
+  for (const slug of getAllDuaSlugs()) {
+    const dua = getDua(slug);
     if (!dua || !dua.index) continue;
     entries.push({
       url: `${SITE_URL}/دعاء/${slugifyPillar(dua.pillar)}/${dua.slug}`,

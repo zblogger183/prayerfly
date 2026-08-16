@@ -24,7 +24,17 @@ const ROUTE_PREFIXES: { arabic: string; ascii: string }[] = [
 ];
 
 export function proxy(request: NextRequest) {
-  const decodedPathname = decodeURIComponent(request.nextUrl.pathname);
+  // decodeURIComponent throws URIError on malformed percent-encoding (a
+  // stray "%", an incomplete escape) — previously unguarded, so a crafted
+  // request could throw an uncaught error out of the proxy instead of
+  // falling through to Next's normal 404 handling. Not exploitable beyond
+  // that (no state, nothing else reads this value), but worth closing.
+  let decodedPathname: string;
+  try {
+    decodedPathname = decodeURIComponent(request.nextUrl.pathname);
+  } catch {
+    return;
+  }
 
   for (const { arabic, ascii } of ROUTE_PREFIXES) {
     // Was capped at two segments (enough for /دعاء/[pillar]/[slug]) until

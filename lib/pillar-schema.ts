@@ -5,7 +5,6 @@ export const PillarSchema = z.object({
   title: z.string(),
   description: z.string(),
   intro_markdown: z.string(),
-  child_slugs: z.array(z.string()).default([]),
 });
 
 export type Pillar = z.infer<typeof PillarSchema>;
