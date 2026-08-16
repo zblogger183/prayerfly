@@ -12,7 +12,7 @@ import { RelatedDuas } from "@/components/RelatedDuas";
 import { TOC, type TOCItem } from "@/components/TOC";
 import { decodeSlug, getDua, getRelatedDuas, slugifyPillar } from "@/lib/content";
 import { getAllGuideSlugs, getGuide } from "@/lib/guides";
-import { truncateForMeta } from "@/lib/arabic";
+import { truncateForMeta, truncateForTitle } from "@/lib/arabic";
 import { breadcrumbSchema, faqSchema, howToSchema } from "@/lib/schema";
 
 // Physically lives at /guides/[slug] (ASCII), same reason as every route
@@ -39,7 +39,7 @@ export async function generateMetadata({
   const canonicalPath = `/خطوات/${guide.slug}`;
 
   return {
-    title: guide.title,
+    title: truncateForTitle(guide.title),
     description,
     alternates: { canonical: canonicalPath },
     openGraph: { title: guide.title, description, url: canonicalPath, type: "article" },

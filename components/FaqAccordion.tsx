@@ -23,7 +23,7 @@ export function FaqAccordion({ items }: FaqAccordionProps) {
         <details key={i} className="group bg-background open:bg-surface">
           <summary className="cursor-pointer list-none px-4 py-3.5 font-medium text-foreground marker:content-none">
             <span className="flex items-center justify-between gap-4">
-              {item.q}
+              <h3 className="font-sans text-base font-medium">{item.q}</h3>
               <ChevronDown className="size-4 shrink-0 text-foreground/40 transition-transform group-open:rotate-180" />
             </span>
           </summary>

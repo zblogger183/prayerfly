@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { BookOpenCheck, Compass, Library, ShieldCheck } from "lucide-react";
@@ -11,6 +12,22 @@ import { truncateForMeta } from "@/lib/arabic";
 import { getAllPillarHubs, getBuildableEntries, getDua, slugifyPillar } from "@/lib/content";
 import { getSearchIndex } from "@/lib/search-index";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
+
+// The only top-level static route that had no explicit `metadata` export
+// (about/privacy/contact/bookmarks/tools[tool] all already self-canonicalize) —
+// without this, the homepage silently inherited the root layout's bare
+// "PrayerFly" title/description with no <link rel="canonical"> at all.
+export const metadata: Metadata = {
+  // A plain string here would NOT pick up the root layout's "%s | PrayerFly"
+  // template — Next.js only applies a layout's title template to deeper
+  // segments, not to a page.tsx sharing the same segment as the layout that
+  // defines it. Spelled out in full so the brand still shows in the tab/SERP.
+  title: "أدعية وأذكار موثقة بإسناد صحيح | PrayerFly",
+  description: truncateForMeta(
+    "مكتبة أدعية وأذكار عربية موثقة من القرآن والسنة، بدرجة صحة كل حديث ومصدره الأصلي من الدرر السنية — أدعية السفر والاستخارة والمريض والميت، وأذكار الصباح والمساء والتحصين، وأكثر."
+  ),
+  alternates: { canonical: "/" },
+};
 
 const FEATURED_COUNT = 8;
 

@@ -9,7 +9,7 @@ import { RelatedDuas } from "@/components/RelatedDuas";
 import { TOC, type TOCItem } from "@/components/TOC";
 import { getAdhkarCollection, getAllAdhkarSlugs } from "@/lib/adhkar";
 import { decodeSlug, getRelatedDuas } from "@/lib/content";
-import { truncateForMeta } from "@/lib/arabic";
+import { truncateForMeta, truncateForTitle } from "@/lib/arabic";
 import { breadcrumbSchema, faqSchema } from "@/lib/schema";
 import { AdhkarItemsList } from "./AdhkarItemsList";
 
@@ -37,7 +37,7 @@ export async function generateMetadata({
   const canonicalPath = `/اذكار/${collection.slug}`;
 
   return {
-    title: collection.title,
+    title: truncateForTitle(collection.title),
     description,
     alternates: { canonical: canonicalPath },
     openGraph: { title: collection.title, description, url: canonicalPath, type: "article" },

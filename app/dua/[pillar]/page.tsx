@@ -5,6 +5,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { JsonLd } from "@/components/JsonLd";
 import { RelatedDuas } from "@/components/RelatedDuas";
+import { truncateForMeta, truncateForTitle } from "@/lib/arabic";
 import { getAllPillarHubs, getPillarHub } from "@/lib/content";
 import { breadcrumbSchema } from "@/lib/schema";
 
@@ -24,8 +25,8 @@ export async function generateMetadata({
   if (!hub) return {};
 
   return {
-    title: hub.pillarName,
-    description: hub.description ?? `أدعية موثقة في باب ${hub.pillarName}`,
+    title: truncateForTitle(hub.pillarName),
+    description: truncateForMeta(hub.description ?? `أدعية موثقة بإسناد صحيح في باب ${hub.pillarName}، مع درجة الصحة والمصدر لكل دعاء.`),
     alternates: { canonical: `/دعاء/${hub.pillarSlug}` },
   };
 }

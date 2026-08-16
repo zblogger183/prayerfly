@@ -9,7 +9,7 @@ import { FaqAccordion } from "@/components/FaqAccordion";
 import { JsonLd } from "@/components/JsonLd";
 import { RelatedDuas } from "@/components/RelatedDuas";
 import { TOC, type TOCItem } from "@/components/TOC";
-import { truncateForMeta } from "@/lib/arabic";
+import { truncateForMeta, truncateForTitle } from "@/lib/arabic";
 import { decodeSlug, getBuildableEntries, getDua, getRelatedDuas, slugifyPillar } from "@/lib/content";
 import { articleSchema, breadcrumbSchema, faqSchema } from "@/lib/schema";
 import { DuaActions } from "./DuaActions";
@@ -45,9 +45,16 @@ export async function generateMetadata({
 
   const description = truncateForMeta(dua.quick_answer);
   const canonicalPath = `/دعاء/${slugifyPillar(dua.pillar)}/${dua.slug}`;
+  // Meta <title> tracks the H1's exact-keyword phrasing (primary_keyword)
+  // rather than the more descriptive `title` field — keeps the title tag
+  // aligned with the on-page H1 for topical relevance, and stays under
+  // Google's ~60-char SERP truncation point, which `title` alone missed
+  // on roughly a fifth of pages (some run well past 80 chars with brand
+  // suffix included).
+  const metaTitle = truncateForTitle(dua.primary_keyword);
 
   return {
-    title: dua.title,
+    title: metaTitle,
     description,
     alternates: { canonical: canonicalPath },
     openGraph: {
