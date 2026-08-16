@@ -171,6 +171,12 @@ export function articleSchema(
     datePublished: entry.last_updated,
     dateModified: entry.last_updated,
     mainEntityOfPage: absoluteUrl(canonicalPath),
+    // Matches the URL Next.js's opengraph-image.tsx file convention serves
+    // for this same route segment (every dua/azkar/guide/pillar route has
+    // one, see lib/og-image.tsx) — kept as a plain string template rather
+    // than importing next/og machinery into this module, since the two
+    // just need to agree on the URL shape, not share code.
+    image: absoluteUrl(`${canonicalPath}/opengraph-image`),
     author: publisher,
     publisher,
   };

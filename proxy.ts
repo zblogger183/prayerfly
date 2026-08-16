@@ -27,13 +27,16 @@ export function proxy(request: NextRequest) {
   const decodedPathname = decodeURIComponent(request.nextUrl.pathname);
 
   for (const { arabic, ascii } of ROUTE_PREFIXES) {
-    const match = decodedPathname.match(
-      new RegExp(`^/${arabic}(?:/([^/]+))?(?:/([^/]+))?/?$`)
-    );
+    // Was capped at two segments (enough for /دعاء/[pillar]/[slug]) until
+    // opengraph-image.tsx added a third, metadata-route segment
+    // (/دعاء/[pillar]/[slug]/opengraph-image) that silently 404'd through
+    // this proxy — capturing the whole remainder instead of two fixed
+    // groups generalizes to any depth, present or future.
+    const match = decodedPathname.match(new RegExp(`^/${arabic}(/.*)?$`));
     if (match) {
-      const [, first, second] = match;
+      const rest = match[1] ?? "";
       const url = request.nextUrl.clone();
-      url.pathname = first ? `/${ascii}/${first}${second ? `/${second}` : ""}` : `/${ascii}`;
+      url.pathname = `/${ascii}${rest}`;
       return NextResponse.rewrite(url);
     }
   }
