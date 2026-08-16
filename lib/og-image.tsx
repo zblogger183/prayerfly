@@ -33,6 +33,38 @@ const UNSUPPORTED_PUNCTUATION: [RegExp, string][] = [
   [/ﷺ/g, ""],
 ];
 
+// Matches a maximal run of Arabic-script characters (plain letters or
+// already-shaped presentation forms) vs. everything else (spaces, digits,
+// Latin, leftover punctuation) in one alternating pass.
+const ARABIC_RUN = /[؀-ۿﭐ-﷿ﹰ-﻿]+|[^؀-ۿﭐ-﷿ﹰ-﻿]+/g;
+
+/**
+ * Satori paints a string as a flat left-to-right glyph run — it does not
+ * implement the Unicode bidi algorithm itself (confirmed empirically:
+ * plain Arabic text painted glyphs in logical rather than visual order
+ * regardless of the CSS `direction` property, which only affects
+ * layout/alignment, not character reordering). To get correct visual RTL
+ * output we do the reordering ourselves before handing text to Satori:
+ * reverse the run order (so the first logical word ends up painted last,
+ * i.e. rightmost) and reverse characters *within* each Arabic run (so its
+ * glyphs paint in the right sequence) — but never reverse a non-Arabic
+ * run's own internal order, or embedded numbers/dates come out backwards
+ * ("2026" → "6202"). This is a narrow, purpose-built substitute for real
+ * bidi resolution, good enough for this decorative single-line-ish card
+ * text — not a general-purpose bidi implementation.
+ */
+function visualOrder(text: string): string {
+  const runs = text.match(ARABIC_RUN) ?? [];
+  // Fresh non-global regex for the per-run membership check — reusing the
+  // module-level ARABIC_RUN (which has the `g` flag) with .test() here
+  // would be stateful across iterations and silently skip matches.
+  const isArabicRun = /[؀-ۿﭐ-﷿ﹰ-﻿]/;
+  return runs
+    .reverse()
+    .map((run) => (isArabicRun.test(run) ? [...run].reverse().join("") : run))
+    .join("");
+}
+
 function reshapeArabic(text: string): string {
   // Tashkeel (fatha/damma/kasra/tanwin/shadda/sukun) triggers the same
   // unsupported GSUB lookup as the punctuation above — isolated the same
@@ -45,7 +77,8 @@ function reshapeArabic(text: string): string {
     sanitized = sanitized.replace(pattern, replacement);
   }
   sanitized = sanitized.replace(/\s+/g, " ").trim();
-  return ArabicShaper.convertArabic(sanitized);
+  const shaped = ArabicShaper.convertArabic(sanitized);
+  return visualOrder(shaped);
 }
 
 export const OG_SIZE = { width: 1200, height: 630 };
@@ -75,6 +108,17 @@ export function gradeLabel(grade: string): string {
 const naskhFontPromise = readFile(join(process.cwd(), "assets/fonts/NotoNaskhArabic-Bold.ttf"));
 const sansFontPromise = readFile(join(process.cwd(), "assets/fonts/NotoSansArabic-SemiBold.ttf"));
 
+// app/icon.png (not the assets/logo-icon.svg vector) — Satori's <img>
+// reliably handles a raster data URI the way Next's own opengraph-image
+// docs demonstrate; SVG-in-Satori support is inconsistent. The icon's own
+// line art is brand dark-green, which would vanish against this card's
+// dark-green gradient, so it sits on a small white badge below rather than
+// directly on the gradient — contrast by construction, not by recoloring
+// the source asset.
+const logoIconPromise = readFile(join(process.cwd(), "app/icon.png")).then(
+  (buf) => `data:image/png;base64,${buf.toString("base64")}`
+);
+
 interface OgCardProps {
   eyebrow?: string;
   title: string;
@@ -88,7 +132,11 @@ function titleFontSize(title: string): number {
 }
 
 export async function renderOgCard({ eyebrow, title, subtitle }: OgCardProps) {
-  const [naskhFont, sansFont] = await Promise.all([naskhFontPromise, sansFontPromise]);
+  const [naskhFont, sansFont, logoIcon] = await Promise.all([
+    naskhFontPromise,
+    sansFontPromise,
+    logoIconPromise,
+  ]);
   const shapedEyebrow = eyebrow ? reshapeArabic(eyebrow) : undefined;
   const shapedTitle = reshapeArabic(title);
   const shapedSubtitle = subtitle ? reshapeArabic(subtitle) : undefined;
@@ -100,7 +148,6 @@ export async function renderOgCard({ eyebrow, title, subtitle }: OgCardProps) {
           width: "100%",
           height: "100%",
           display: "flex",
-          direction: "rtl",
           background: "linear-gradient(180deg, #1c4b42 0%, #3b9b89 100%)",
           fontFamily: "Noto Sans Arabic",
         }}
@@ -119,10 +166,26 @@ export async function renderOgCard({ eyebrow, title, subtitle }: OgCardProps) {
             padding: "48px",
           }}
         >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 76,
+              height: 76,
+              borderRadius: "50%",
+              background: "#ffffff",
+              marginBottom: 20,
+            }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={logoIcon} width={46} height={46} alt="" />
+          </div>
           {shapedEyebrow && (
             <div
               style={{
                 display: "flex",
+                direction: "ltr",
                 color: "rgba(255,255,255,0.75)",
                 fontSize: 28,
                 marginBottom: 24,
@@ -134,6 +197,7 @@ export async function renderOgCard({ eyebrow, title, subtitle }: OgCardProps) {
           <div
             style={{
               display: "flex",
+              direction: "ltr",
               color: "#ffffff",
               fontFamily: "Noto Naskh Arabic",
               fontSize: titleFontSize(title),
@@ -148,6 +212,7 @@ export async function renderOgCard({ eyebrow, title, subtitle }: OgCardProps) {
             <div
               style={{
                 display: "flex",
+                direction: "ltr",
                 color: "rgba(255,255,255,0.82)",
                 fontSize: 26,
                 textAlign: "center",
