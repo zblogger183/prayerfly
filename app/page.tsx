@@ -10,8 +10,21 @@ import { JsonLd } from "@/components/JsonLd";
 import { Logo } from "@/components/Logo";
 import { truncateForMeta } from "@/lib/arabic";
 import { getAllPillarHubs, getBuildableEntries, getDua, slugifyPillar } from "@/lib/content";
+import { getPillarStyle } from "@/lib/pillar-style";
 import { getSearchIndex } from "@/lib/search-index";
 import { organizationSchema, websiteSchema } from "@/lib/schema";
+
+/** Same grade→color mapping AuthenticityBadge uses, condensed to just the
+ * accent bar/tint each featured-dua card needs — kept here rather than
+ * exported from that component since this shape (bar + soft tint) is
+ * specific to the card layout, not the badge itself. */
+const GRADE_ACCENT: Record<string, { bar: string; tint: string }> = {
+  sahih: { bar: "bg-primary", tint: "bg-primary-50" },
+  hasan: { bar: "bg-teal-500", tint: "bg-teal-50" },
+  daif: { bar: "bg-amber-500", tint: "bg-amber-50" },
+  mixed: { bar: "bg-zinc-400", tint: "bg-zinc-50" },
+  no_fixed_hadith: { bar: "bg-slate-400", tint: "bg-slate-50" },
+};
 
 // The only top-level static route that had no explicit `metadata` export
 // (about/privacy/contact/bookmarks/tools[tool] all already self-canonicalize) —
@@ -81,56 +94,73 @@ export default function Home() {
       <JsonLd data={websiteSchema()} />
       <JsonLd data={organizationSchema()} />
 
-      {/* 1. Hero — background stays solid white per Section 8; the geometric
-          pattern is an outline at ~6% opacity, so it reads as texture, not
-          a color wash. Brand color itself still only appears in small
-          deliberate touches (logo, underline, CTA, stat numbers). */}
-      <section className="relative overflow-hidden border-b border-foreground/10 bg-background px-6 pb-16 pt-20 text-center sm:pb-20 sm:pt-24">
-        <GeometricPattern className="pointer-events-none absolute inset-0 h-full w-full text-primary/[0.06] [mask-image:radial-gradient(ellipse_65%_55%_at_50%_0%,black,transparent)]" />
+      {/* 1. Hero — a full-bleed brand gradient rather than a white panel
+          with a faint accent: PROJECT_PLAN.md's original "solid white
+          everywhere, lime as a tiny accent" rule read as flat/dull once the
+          real site was live next to warmer competitor sites (du3a.org's
+          gold/brown palette, azkarna.com's bold saturated hero), so the
+          hero specifically now carries real color — the rest of the site
+          stays mostly white so this still reads as a deliberate accent
+          moment, not a full repaint. */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 via-primary-600 to-primary-400 px-6 pb-16 pt-20 text-center sm:pb-24 sm:pt-28">
+        <GeometricPattern className="pointer-events-none absolute inset-0 h-full w-full text-white/[0.08] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,black,transparent)]" />
+        {/* Soft glow shapes for depth — blurred, low-opacity, purely
+            decorative; never sharp enough to compete with the foreground
+            text/buttons for attention. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-24 -top-24 size-72 rounded-full bg-secondary/30 blur-3xl"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -bottom-32 -left-16 size-80 rounded-full bg-white/10 blur-3xl"
+        />
 
         <div className="relative mx-auto flex max-w-2xl flex-col items-center gap-6">
           <div className="flex flex-col items-center gap-3">
-            <Logo className="size-12 text-primary" />
+            <span className="flex size-16 items-center justify-center rounded-2xl bg-white/15 shadow-soft-lg backdrop-blur-sm">
+              <Logo className="size-9 text-white" />
+            </span>
             <div className="flex flex-col items-center gap-2">
-              <span className="font-sans text-3xl font-bold tracking-tight text-primary sm:text-4xl">
+              <span className="font-sans text-3xl font-bold tracking-tight text-white sm:text-4xl">
                 PrayerFly
               </span>
               <span aria-hidden="true" className="h-1 w-10 rounded-full bg-secondary" />
             </div>
           </div>
-          <p className="font-sans text-lg text-foreground/70">أدعية موثقة بإسناد صحيح</p>
+          <p className="font-sans text-lg text-white/85">أدعية موثقة بإسناد صحيح</p>
 
-          <p className="font-naskh max-w-md text-2xl leading-loose text-foreground/90">
+          <p className="font-naskh max-w-md text-2xl leading-loose text-white">
             بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ
           </p>
 
           <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/دعاء"
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white shadow-soft transition-colors hover:bg-primary-700"
+              className="inline-flex items-center gap-2 rounded-full bg-secondary px-6 py-3 text-sm font-semibold text-primary-900 shadow-soft-lg transition-transform hover:-translate-y-0.5 hover:bg-secondary/90"
             >
               <Compass className="size-4" />
               تصفح الأدعية
             </Link>
             <a
               href="#search"
-              className="inline-flex items-center gap-2 rounded-full border border-foreground/15 px-6 py-3 text-sm font-semibold text-foreground/80 transition-colors hover:border-primary/40 hover:text-primary"
+              className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/20"
             >
               ابحث عن دعاء
             </a>
           </div>
 
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-foreground/60">
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-white/80">
             <span className="flex items-baseline gap-1.5">
-              <span className="font-sans text-lg font-bold text-primary">{totalDuas}+</span>
+              <span className="font-sans text-lg font-bold text-secondary">{totalDuas}+</span>
               دعاء موثق
             </span>
             <span className="flex items-baseline gap-1.5">
-              <span className="font-sans text-lg font-bold text-primary">{pillars.length}</span>
+              <span className="font-sans text-lg font-bold text-secondary">{pillars.length}</span>
               بابًا وموضوعًا
             </span>
             <span className="flex items-baseline gap-1.5">
-              <ShieldCheck className="size-4 text-primary" />
+              <ShieldCheck className="size-4 text-secondary" />
               درجة صحة ظاهرة لكل نص
             </span>
           </div>
@@ -160,21 +190,30 @@ export default function Home() {
             </Link>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-            {pillars.slice(0, 12).map((pillar) => (
-              <Link
-                key={pillar.pillarSlug}
-                href={`/دعاء/${pillar.pillarSlug}`}
-                className="group flex flex-col gap-1 rounded-xl border border-foreground/10 bg-surface p-4 transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-soft"
-              >
-                <span className="font-medium text-foreground group-hover:text-primary">
-                  {pillar.pillarName}
-                </span>
-                <span className="flex items-center gap-1.5 text-sm text-foreground/50">
-                  <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-secondary" />
-                  {pillar.children.length} {pillar.children.length === 1 ? "دعاء" : "أدعية"}
-                </span>
-              </Link>
-            ))}
+            {pillars.slice(0, 12).map((pillar) => {
+              const style = getPillarStyle(pillar.pillarSlug);
+              return (
+                <Link
+                  key={pillar.pillarSlug}
+                  href={`/دعاء/${pillar.pillarSlug}`}
+                  className={`group flex flex-col gap-3 rounded-2xl border border-foreground/10 bg-background p-4 shadow-soft transition-all hover:-translate-y-1 hover:shadow-soft-lg ${style.cardHover}`}
+                >
+                  <span
+                    className={`flex size-10 items-center justify-center rounded-xl ${style.iconBg} ${style.iconText}`}
+                  >
+                    <style.icon className="size-5" />
+                  </span>
+                  <div className="flex flex-col gap-1">
+                    <span className="font-medium text-foreground group-hover:text-primary">
+                      {pillar.pillarName}
+                    </span>
+                    <span className="text-sm text-foreground/50">
+                      {pillar.children.length} {pillar.children.length === 1 ? "دعاء" : "أدعية"}
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -186,28 +225,34 @@ export default function Home() {
             الأدعية الأكثر بحثًا
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {featuredDuas.map((dua) => (
-              <Link
-                key={dua.slug}
-                href={`/دعاء/${slugifyPillar(dua.pillar)}/${dua.slug}`}
-                className="flex flex-col gap-3 rounded-xl border border-foreground/10 bg-surface p-5 transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-soft"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <span className="font-sans font-semibold text-foreground">{dua.title}</span>
-                </div>
-                <p className="text-sm leading-relaxed text-foreground/60">
-                  {truncateForMeta(dua.quick_answer, 90)}
-                </p>
-                <div className="mt-auto pt-1">
-                  <AuthenticityBadge
-                    grade={dua.authenticity_grade}
-                    narrator={dua.narrator}
-                    source={dua.primary_source}
-                    compact
-                  />
-                </div>
-              </Link>
-            ))}
+            {featuredDuas.map((dua) => {
+              const accent = GRADE_ACCENT[dua.authenticity_grade] ?? GRADE_ACCENT.mixed;
+              return (
+                <Link
+                  key={dua.slug}
+                  href={`/دعاء/${slugifyPillar(dua.pillar)}/${dua.slug}`}
+                  className="group overflow-hidden rounded-2xl border border-foreground/10 bg-background shadow-soft transition-all hover:-translate-y-1 hover:shadow-soft-lg"
+                >
+                  <div className={`h-1.5 w-full ${accent.bar}`} />
+                  <div className={`flex h-full flex-col gap-3 p-5 ${accent.tint}`}>
+                    <span className="font-sans font-semibold text-foreground group-hover:text-primary">
+                      {dua.title}
+                    </span>
+                    <p className="text-sm leading-relaxed text-foreground/60">
+                      {truncateForMeta(dua.quick_answer, 90)}
+                    </p>
+                    <div className="mt-auto pt-1">
+                      <AuthenticityBadge
+                        grade={dua.authenticity_grade}
+                        narrator={dua.narrator}
+                        source={dua.primary_source}
+                        compact
+                      />
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
