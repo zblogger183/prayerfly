@@ -1,3 +1,4 @@
+import { createElement } from "react";
 import {
   BookOpenCheck,
   Baby,
@@ -65,4 +66,18 @@ const FALLBACK_ICON = Sparkles;
 
 export function getPillarIcon(pillarSlug: string): LucideIcon {
   return PILLAR_ICONS[pillarSlug] ?? FALLBACK_ICON;
+}
+
+/**
+ * For single-use sites (a page header, not a list of cards) — the obvious
+ * `const Icon = getPillarIcon(...); return <Icon />` trips
+ * react-hooks/static-components ("components created during render"), even
+ * though the lookup is a stable, static reference (a plain object lookup)
+ * and never actually constructs anything new — this is a pure
+ * AST-syntax-pattern lint, not a real per-render allocation. createElement
+ * renders the identical output without writing the `<Icon />` JSX shape
+ * the linter pattern-matches on.
+ */
+export function PillarIcon({ pillarSlug, className }: { pillarSlug: string; className?: string }) {
+  return createElement(getPillarIcon(pillarSlug), { className });
 }

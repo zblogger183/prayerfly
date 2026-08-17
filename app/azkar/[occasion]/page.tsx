@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { HelpCircle, Landmark, Sparkles } from "lucide-react";
 
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ErrorReportLink } from "@/components/ErrorReportLink";
 import { FaqAccordion } from "@/components/FaqAccordion";
 import { JsonLd } from "@/components/JsonLd";
 import { RelatedDuas } from "@/components/RelatedDuas";
+import { SectionHeading } from "@/components/SectionHeading";
 import { TOC, type TOCItem } from "@/components/TOC";
 import { getAdhkarCollection, getAllAdhkarSlugs } from "@/lib/adhkar";
 import { decodeSlug, getRelatedDuas } from "@/lib/content";
@@ -86,8 +88,9 @@ export default async function AdhkarPage({
 
       <h1 className="mb-4 mt-3 font-sans text-3xl font-bold text-primary">{collection.title}</h1>
 
-      <div className="mb-8 rounded-xl border border-primary-100 bg-primary-50/50 p-5">
-        <p className="mb-1.5 text-xs font-semibold tracking-wide text-primary-700">
+      <div className="mb-8 rounded-2xl border border-primary-100 bg-primary-50/60 p-5">
+        <p className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold tracking-wide text-primary-700">
+          <Sparkles className="size-3.5" />
           الإجابة السريعة
         </p>
         <p className="text-base leading-relaxed text-foreground/85">{collection.quick_answer}</p>
@@ -100,19 +103,19 @@ export default async function AdhkarPage({
           </section>
 
           <section id="faq" className="scroll-mt-20 space-y-3">
-            <h2 className="font-sans text-lg font-semibold text-primary">الأسئلة الشائعة</h2>
+            <SectionHeading icon={HelpCircle}>الأسئلة الشائعة</SectionHeading>
             <FaqAccordion items={collection.faq} />
           </section>
 
           {relatedDuas.length > 0 && (
             <section id="related" className="scroll-mt-20 space-y-3">
-              <h2 className="font-sans text-lg font-semibold text-primary">أدعية ذات صلة</h2>
+              <SectionHeading icon={Sparkles}>أدعية ذات صلة</SectionHeading>
               <RelatedDuas items={relatedDuas} />
             </section>
           )}
 
           <section id="references" className="scroll-mt-20 space-y-2">
-            <h2 className="font-sans text-lg font-semibold text-primary">المصادر</h2>
+            <SectionHeading icon={Landmark}>المصادر</SectionHeading>
             <ol className="list-inside list-decimal space-y-1 text-sm text-foreground/70">
               {uniqueSources.map((source) => (
                 <li key={source}>{source}</li>

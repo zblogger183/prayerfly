@@ -7,6 +7,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { RelatedDuas } from "@/components/RelatedDuas";
 import { truncateForMeta, truncateForTitle } from "@/lib/arabic";
 import { getAllPillarHubs, getPillarHub } from "@/lib/content";
+import { PillarIcon } from "@/lib/pillar-style";
 import { breadcrumbSchema } from "@/lib/schema";
 
 export const revalidate = 604800; // weekly ISR
@@ -57,11 +58,16 @@ export default async function PillarHubPage({
 
       <Breadcrumbs items={breadcrumbItems} />
 
-      <div className="mb-6 mt-3 flex flex-wrap items-center gap-3">
-        <h1 className="font-sans text-3xl font-bold text-primary">{hub.pillarName}</h1>
-        <span className="rounded-full bg-primary-50 px-3 py-1 text-sm font-medium text-primary-700">
-          {items.length === 1 ? "دعاء واحد" : `${items.length} أدعية`}
+      <div className="mb-6 mt-3 flex flex-wrap items-center gap-4">
+        <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary-50 text-primary">
+          <PillarIcon pillarSlug={hub.pillarSlug} className="size-7" />
         </span>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="font-sans text-3xl font-bold text-primary">{hub.pillarName}</h1>
+          <span className="rounded-full bg-primary-50 px-3 py-1 text-sm font-medium text-primary-700">
+            {items.length === 1 ? "دعاء واحد" : `${items.length} أدعية`}
+          </span>
+        </div>
       </div>
 
       {hub.introMarkdown ? (

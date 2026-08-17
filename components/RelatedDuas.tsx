@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 export interface RelatedDua {
   title: string;
@@ -19,9 +20,12 @@ export function RelatedDuas({ items }: RelatedDuasProps) {
         <Link
           key={item.slug}
           href={`/دعاء/${item.pillar}/${item.slug}`}
-          className="rounded-xl border border-foreground/10 bg-surface p-4 transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-soft"
+          className="group flex items-center justify-between gap-3 rounded-2xl border border-foreground/10 bg-background p-4 shadow-soft transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-soft-lg"
         >
-          <span className="block font-medium text-foreground">{item.title}</span>
+          <span className="font-medium text-foreground group-hover:text-primary">{item.title}</span>
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary transition-transform group-hover:-translate-x-0.5">
+            <ArrowLeft className="size-3.5" />
+          </span>
         </Link>
       ))}
     </div>
