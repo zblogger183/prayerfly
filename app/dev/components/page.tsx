@@ -37,7 +37,7 @@ export default function DevComponentsPage() {
   }
 
   return (
-    <div dir="rtl" className="mx-auto max-w-3xl px-6 py-12">
+    <div dir="rtl" className="mx-auto w-full max-w-5xl px-6 py-12">
       <h1 className="mb-1 font-sans text-2xl font-bold text-foreground">
         معرض المكوّنات (Sprint 3)
       </h1>

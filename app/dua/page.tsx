@@ -20,6 +20,13 @@ export const metadata: Metadata = {
   title: "تصفح الأدعية حسب الموضوع",
   description: "دليل كامل لكل أبواب الأدعية الموثقة في PrayerFly، مرتبة حسب الموضوع.",
   alternates: { canonical: canonicalPath },
+  openGraph: {
+    title: "تصفح الأدعية حسب الموضوع",
+    description: "دليل كامل لكل أبواب الأدعية الموثقة في PrayerFly، مرتبة حسب الموضوع.",
+    url: canonicalPath,
+    type: "website",
+    locale: "ar_AR",
+  },
 };
 
 export default function DuaIndexPage() {
@@ -32,7 +39,7 @@ export default function DuaIndexPage() {
   ];
 
   return (
-    <div dir="rtl" className="mx-auto max-w-6xl px-6 py-12">
+    <div dir="rtl" className="mx-auto w-full max-w-5xl px-6 py-12">
       <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
 
       <Breadcrumbs items={breadcrumbItems} />

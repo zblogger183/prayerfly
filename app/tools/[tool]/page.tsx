@@ -30,10 +30,12 @@ export async function generateMetadata({
   if (decodeSlug(tool) !== TOOL_SLUG) return {};
 
   const canonicalPath = `/ادوات/${TOOL_SLUG}`;
+  const description = "اختر قرابتك من الشخص والمناسبة، واحصل على الدعاء المناسب الثابت له.";
   return {
     title: "دعاء لشخص",
-    description: "اختر قرابتك من الشخص والمناسبة، واحصل على الدعاء المناسب الثابت له.",
+    description,
     alternates: { canonical: canonicalPath },
+    openGraph: { title: "دعاء لشخص", description, url: canonicalPath, type: "website", locale: "ar_AR" },
   };
 }
 
@@ -50,19 +52,25 @@ export default async function ToolPage({ params }: { params: Promise<{ tool: str
   const matrix = getFinderMatrix();
 
   return (
-    <div dir="rtl" className="mx-auto max-w-2xl px-6 py-12">
+    <div dir="rtl" className="mx-auto w-full max-w-5xl px-6 py-12">
       <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
 
       <Breadcrumbs items={breadcrumbItems} />
 
       <h1 className="mb-4 mt-3 font-sans text-3xl font-bold text-primary">دعاء لشخص</h1>
-      <div className="mb-8 rounded-xl border border-primary-100 bg-primary-50/50 p-5">
-        <p className="text-base leading-relaxed text-foreground/85">
-          اختر قرابتك من الشخص والمناسبة، لتحصل مباشرة على الدعاء الثابت المناسب له.
-        </p>
-      </div>
 
-      <RelationshipDuaFinder relationships={relationships} occasions={occasions} matrix={matrix} />
+      {/* Capped narrower than the page shell — a two-field picker and its
+          result card stretched to 1024px would look stray rather than
+          like a deliberate, focused tool. */}
+      <div className="max-w-2xl">
+        <div className="mb-8 rounded-xl border border-primary-100 bg-primary-50/50 p-5">
+          <p className="text-base leading-relaxed text-foreground/85">
+            اختر قرابتك من الشخص والمناسبة، لتحصل مباشرة على الدعاء الثابت المناسب له.
+          </p>
+        </div>
+
+        <RelationshipDuaFinder relationships={relationships} occasions={occasions} matrix={matrix} />
+      </div>
     </div>
   );
 }

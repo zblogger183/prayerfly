@@ -2,7 +2,6 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { DuaSchema, type Dua } from "@/lib/schema";
 import { PillarSchema, type Pillar } from "@/lib/pillar-schema";
-import type { RelatedDua } from "@/components/RelatedDuas";
 
 const CONTENT_PLAN_PATH = join(process.cwd(), "content-plan.json");
 const DUAS_DIR = join(process.cwd(), "content", "duas");
@@ -194,27 +193,4 @@ export function getAllPillarHubs(): PillarHub[] {
     if (hub) hubs.push(hub);
   }
   return hubs;
-}
-
-/**
- * Resolves `related_slugs` (just slug strings in the schema) into the
- * {title, slug, pillar} shape RelatedDuas needs, skipping any slug that
- * doesn't resolve to a real file — a stale/typo'd related_slugs entry
- * should silently drop, not 404 or crash the page it's linked from.
- *
- * Takes `{ related_slugs }` rather than `Dua` specifically so
- * AdhkarCollection entries (which have their own related_slugs field but
- * aren't a Dua) can resolve cross-links into content/duas/ too — the
- * target is always a real dua page either way, since RelatedDuas only
- * knows how to build /دعاء/{pillar}/{slug} hrefs.
- */
-export function getRelatedDuas({ related_slugs }: { related_slugs: string[] }): RelatedDua[] {
-  const related: RelatedDua[] = [];
-  for (const slug of related_slugs) {
-    const target = getDua(slug);
-    if (target) {
-      related.push({ title: target.title, slug: target.slug, pillar: slugifyPillar(target.pillar) });
-    }
-  }
-  return related;
 }

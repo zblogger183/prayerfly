@@ -10,9 +10,10 @@ import { RelatedDuas } from "@/components/RelatedDuas";
 import { SectionHeading } from "@/components/SectionHeading";
 import { TOC, type TOCItem } from "@/components/TOC";
 import { getAdhkarCollection, getAllAdhkarSlugs } from "@/lib/adhkar";
-import { decodeSlug, getRelatedDuas } from "@/lib/content";
+import { decodeSlug } from "@/lib/content";
+import { getRelatedDuas } from "@/lib/related-content";
 import { truncateForMeta, truncateForTitle } from "@/lib/arabic";
-import { articleSchema, breadcrumbSchema, faqSchema } from "@/lib/schema";
+import { absoluteUrl, articleSchema, breadcrumbSchema, faqSchema } from "@/lib/schema";
 import { AdhkarItemsList } from "./AdhkarItemsList";
 
 // Physically lives at /azkar/[occasion] (ASCII), same reason as every
@@ -42,7 +43,15 @@ export async function generateMetadata({
     title: truncateForTitle(collection.title),
     description,
     alternates: { canonical: canonicalPath },
-    openGraph: { title: collection.title, description, url: canonicalPath, type: "article" },
+    openGraph: {
+      title: collection.title,
+      description,
+      url: canonicalPath,
+      type: "article",
+      locale: "ar_AR",
+      // Same ASCII-leak fix as the dua/pillar pages — see that comment.
+      images: [absoluteUrl(`${canonicalPath}/opengraph-image`)],
+    },
     ...(collection.index ? {} : { robots: { index: false, follow: true } }),
   };
 }
@@ -74,7 +83,7 @@ export default async function AdhkarPage({
   const uniqueSources = [...new Set(collection.items.map((item) => item.primary_source))];
 
   return (
-    <div dir="rtl" className="mx-auto max-w-4xl px-6 py-12">
+    <div dir="rtl" className="mx-auto w-full max-w-5xl px-6 py-12">
       <JsonLd
         data={articleSchema(
           { headline: collection.title, quick_answer: collection.quick_answer, last_updated: collection.last_updated },

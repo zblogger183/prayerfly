@@ -41,7 +41,7 @@ export type Dua = z.infer<typeof DuaSchema>;
 const SITE_URL = "https://prayerfly.com";
 const SITE_NAME = "PrayerFly";
 
-function absoluteUrl(path: string): string {
+export function absoluteUrl(path: string): string {
   return new URL(path, SITE_URL).toString();
 }
 
@@ -151,7 +151,7 @@ export function howToSchema(guide: Guide) {
  */
 /**
  * Takes the minimal shape rather than `Dua` specifically — same reasoning
- * as getRelatedDuas's generalization in lib/content.ts — so adhkar
+ * as getRelatedDuas's generalization in lib/related-content.ts — so adhkar
  * collections (which have no `primary_keyword`, just `title`) can produce
  * Article JSON-LD too, not only dua pages. `headline` is passed
  * pre-resolved by the caller (dua pages use primary_keyword to match their

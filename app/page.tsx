@@ -40,6 +40,7 @@ export const metadata: Metadata = {
     "مكتبة أدعية وأذكار عربية موثقة من القرآن والسنة، بدرجة صحة كل حديث ومصدره الأصلي من الدرر السنية — أدعية السفر والاستخارة والمريض والميت، وأذكار الصباح والمساء والتحصين، وأكثر."
   ),
   alternates: { canonical: "/" },
+  openGraph: { url: "/", type: "website", locale: "ar_AR" },
 };
 
 const FEATURED_COUNT = 8;

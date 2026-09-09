@@ -5,6 +5,10 @@ export interface RelatedDua {
   title: string;
   slug: string;
   pillar: string;
+  /** Overrides the default `/دعاء/{pillar}/{slug}` href — needed when the
+   *  related item is a guide or adhkar collection rather than a dua, since
+   *  those live under a different URL shape entirely. */
+  href?: string;
 }
 
 interface RelatedDuasProps {
@@ -19,7 +23,7 @@ export function RelatedDuas({ items }: RelatedDuasProps) {
       {items.map((item) => (
         <Link
           key={item.slug}
-          href={`/دعاء/${item.pillar}/${item.slug}`}
+          href={item.href ?? `/دعاء/${item.pillar}/${item.slug}`}
           className="group flex items-center justify-between gap-3 rounded-2xl border border-foreground/10 bg-background p-4 shadow-soft transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-soft-lg"
         >
           <span className="font-medium text-foreground group-hover:text-primary">{item.title}</span>

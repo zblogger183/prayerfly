@@ -12,10 +12,11 @@ import { JsonLd } from "@/components/JsonLd";
 import { RelatedDuas } from "@/components/RelatedDuas";
 import { SectionHeading } from "@/components/SectionHeading";
 import { TOC, type TOCItem } from "@/components/TOC";
-import { decodeSlug, getDua, getRelatedDuas, slugifyPillar } from "@/lib/content";
+import { decodeSlug, getDua, slugifyPillar } from "@/lib/content";
 import { getAllGuideSlugs, getGuide } from "@/lib/guides";
+import { getRelatedDuas } from "@/lib/related-content";
 import { truncateForMeta, truncateForTitle } from "@/lib/arabic";
-import { breadcrumbSchema, faqSchema, howToSchema } from "@/lib/schema";
+import { absoluteUrl, breadcrumbSchema, faqSchema, howToSchema } from "@/lib/schema";
 
 // Physically lives at /guides/[slug] (ASCII), same reason as every route
 // since Sprint 4: Next.js 16.3's static export throws InvalidCharacterError
@@ -44,7 +45,15 @@ export async function generateMetadata({
     title: truncateForTitle(guide.title),
     description,
     alternates: { canonical: canonicalPath },
-    openGraph: { title: guide.title, description, url: canonicalPath, type: "article" },
+    openGraph: {
+      title: guide.title,
+      description,
+      url: canonicalPath,
+      type: "article",
+      locale: "ar_AR",
+      // Same ASCII-leak fix as the dua/pillar/azkar pages — see that comment.
+      images: [absoluteUrl(`${canonicalPath}/opengraph-image`)],
+    },
     ...(guide.index ? {} : { robots: { index: false, follow: true } }),
   };
 }
@@ -69,7 +78,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
   ];
 
   return (
-    <div dir="rtl" className="mx-auto max-w-4xl px-6 py-12">
+    <div dir="rtl" className="mx-auto w-full max-w-5xl px-6 py-12">
       <JsonLd data={howToSchema(guide)} />
       <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
       <JsonLd data={faqSchema(guide.faq)} />

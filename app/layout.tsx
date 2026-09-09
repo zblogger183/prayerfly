@@ -30,6 +30,11 @@ export const metadata: Metadata = {
     template: "%s | PrayerFly",
   },
   description: "أدعية موثقة بإسناد صحيح",
+  // Site-wide OG defaults — only applies to routes that don't set their own
+  // `openGraph` object, since Next replaces (not deep-merges) that object
+  // per segment. Every route that does define its own still needs to repeat
+  // `locale` itself.
+  openGraph: { siteName: "PrayerFly", locale: "ar_AR", type: "website" },
   ...(allowIndexing ? {} : { robots: { index: false, follow: false } }),
 };
 

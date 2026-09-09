@@ -12,8 +12,9 @@ import { RelatedDuas } from "@/components/RelatedDuas";
 import { SectionHeading } from "@/components/SectionHeading";
 import { TOC, type TOCItem } from "@/components/TOC";
 import { truncateForMeta, truncateForTitle } from "@/lib/arabic";
-import { decodeSlug, getAllDuaSlugs, getDua, getRelatedDuas, slugifyPillar } from "@/lib/content";
-import { articleSchema, breadcrumbSchema, faqSchema } from "@/lib/schema";
+import { decodeSlug, getAllDuaSlugs, getDua, slugifyPillar } from "@/lib/content";
+import { getRelatedDuas } from "@/lib/related-content";
+import { absoluteUrl, articleSchema, breadcrumbSchema, faqSchema } from "@/lib/schema";
 import { DuaActions } from "./DuaActions";
 
 // NOTE: this route physically lives at /dua/[pillar]/[slug] (ASCII) rather
@@ -77,6 +78,16 @@ export async function generateMetadata({
       description,
       url: canonicalPath,
       type: "article",
+      locale: "ar_AR",
+      // Explicit rather than left to Next's opengraph-image file-convention
+      // auto-fill: that convention resolves against this route's *physical*
+      // path (app/dua/[pillar]/[slug]/opengraph-image.tsx, ASCII, per
+      // next.config.ts's note on Next 16.3's non-ASCII static-export limit),
+      // which leaked the internal "/dua/..." path into the public og:image
+      // tag instead of the real "/دعاء/..." URL every other tag on this
+      // page uses. Same absoluteUrl(canonicalPath + "/opengraph-image")
+      // shape articleSchema's JSON-LD `image` field already uses below.
+      images: [absoluteUrl(`${canonicalPath}/opengraph-image`)],
     },
     ...(dua.index ? {} : { robots: { index: false, follow: true } }),
   };
@@ -118,7 +129,7 @@ export default async function DuaPage({
   ];
 
   return (
-    <div dir="rtl" className="mx-auto max-w-4xl px-6 py-12">
+    <div dir="rtl" className="mx-auto w-full max-w-5xl px-6 py-12">
       <JsonLd
         data={articleSchema(
           { headline: dua.primary_keyword, quick_answer: dua.quick_answer, last_updated: dua.last_updated },

@@ -11,7 +11,21 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
-      ...(allowIndexing ? { allow: "/" } : { disallow: "/" }),
+      ...(allowIndexing
+        ? {
+            allow: "/",
+            // Internal ASCII "shadow" routes (see proxy.ts) — every real
+            // page is only ever linked at its Arabic public URL and
+            // self-canonicalizes back to it (confirmed: /dua/..., /about,
+            // /privacy, /contact, /tools/..., /bookmarks all 200 with a
+            // canonical pointing at the Arabic path). These ASCII paths
+            // exist purely because Next's static export rejects non-ASCII
+            // route *folder* names, not for any crawler to visit — blocking
+            // them outright is pure crawl-budget hygiene, not a duplicate
+            // content fix (canonical already handles that).
+            disallow: ["/dua/", "/azkar/", "/guides/", "/tools/", "/about", "/privacy", "/contact", "/bookmarks"],
+          }
+        : { disallow: "/" }),
     },
     // Left pointing at the production sitemap even while blocked — this
     // is correct for later and Disallow: / already stops crawling now.

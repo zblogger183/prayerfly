@@ -20,7 +20,7 @@ export default function AboutPage() {
   ];
 
   return (
-    <div dir="rtl" className="mx-auto max-w-2xl px-6 py-12">
+    <div dir="rtl" className="mx-auto w-full max-w-5xl px-6 py-12">
       <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
 
       <Breadcrumbs items={breadcrumbItems} />
@@ -32,7 +32,10 @@ export default function AboutPage() {
         <h1 className="font-sans text-3xl font-bold text-foreground">عن الموقع</h1>
       </div>
 
-      <div className="prose prose-sm max-w-none space-y-6 text-foreground/85">
+      {/* Capped narrower than the page shell on purpose — this is several
+          paragraphs of real prose, and letting it stretch to the full
+          1024px shell would badly hurt line-length readability. */}
+      <div className="prose prose-sm max-w-3xl space-y-6 text-foreground/85">
         <p className="rounded-xl border border-primary-100 bg-primary-50/50 p-5 text-foreground/85">
           PrayerFly موقع يجمع الأدعية والأذكار الثابتة عن النبي ﷺ، مع بيان درجة صحة كل نص
           ومصدره، لمن يريد أن يدعو بما ثبت لا بما اشتهر فقط. هذه الصفحة تشرح كيف يُبنى كل نص

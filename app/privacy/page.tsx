@@ -20,7 +20,7 @@ export default function PrivacyPage() {
   ];
 
   return (
-    <div dir="rtl" className="mx-auto max-w-2xl px-6 py-12">
+    <div dir="rtl" className="mx-auto w-full max-w-5xl px-6 py-12">
       <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
 
       <Breadcrumbs items={breadcrumbItems} />
@@ -32,7 +32,9 @@ export default function PrivacyPage() {
         <h1 className="font-sans text-3xl font-bold text-foreground">سياسة الخصوصية</h1>
       </div>
 
-      <div className="prose prose-sm max-w-none space-y-6 text-foreground/85">
+      {/* Capped narrower than the page shell — see app/about/page.tsx's
+          identical comment. */}
+      <div className="prose prose-sm max-w-3xl space-y-6 text-foreground/85">
         <p className="rounded-xl border border-primary-100 bg-primary-50/50 p-5 text-foreground/85">
           PrayerFly (الجهة المسؤولة عن البيانات) لا يطلب من الزائر إنشاء حساب ولا تسجيل دخول،
           ولذلك فإن ما يُجمع من بيانات محدود جدًا. هذه الصفحة تشرح بالضبط ما يحدث.

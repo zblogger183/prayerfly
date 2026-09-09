@@ -38,6 +38,14 @@ export function getSitemapEntries(): SitemapEntry[] {
   entries.push({ url: `${SITE_URL}/عن-الموقع`, lastModified: today });
   entries.push({ url: `${SITE_URL}/سياسة-الخصوصية`, lastModified: today });
   entries.push({ url: `${SITE_URL}/اتصل-بنا`, lastModified: today });
+  // The "browse all pillars" directory (app/dua/page.tsx) and the
+  // relationship dua-finder tool (app/tools/[tool]/page.tsx) are both real,
+  // indexable, nav-linked pages that were missing here entirely — this
+  // function only ever walked pillar hubs/duas/adhkar/guides, never these
+  // two standalone routes. "دعاء-لشخص" must stay in sync with that page's
+  // own TOOL_SLUG constant.
+  entries.push({ url: `${SITE_URL}/دعاء`, lastModified: today });
+  entries.push({ url: `${SITE_URL}/ادوات/دعاء-لشخص`, lastModified: today });
 
   for (const hub of getAllPillarHubs()) {
     entries.push({ url: `${SITE_URL}/دعاء/${hub.pillarSlug}`, lastModified: today });

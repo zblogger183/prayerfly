@@ -33,7 +33,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-30 border-b border-foreground/10 bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+      <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <Link href="/" className="flex shrink-0 items-center gap-2">
           <Image src="/logo-icon.png" alt="" width={28} height={28} className="size-7" priority />
           <span className="font-sans text-xl font-semibold tracking-tight text-primary">

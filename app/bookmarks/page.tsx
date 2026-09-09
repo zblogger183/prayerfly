@@ -28,7 +28,7 @@ export default function BookmarksPage() {
   const index = getSearchIndex();
 
   return (
-    <div dir="rtl" className="mx-auto max-w-3xl px-6 py-12">
+    <div dir="rtl" className="mx-auto w-full max-w-5xl px-6 py-12">
       <Breadcrumbs items={breadcrumbItems} />
 
       <div className="mb-6 mt-3 flex items-center gap-3">

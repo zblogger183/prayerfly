@@ -18,7 +18,7 @@ const ABOUT_LINKS = [
 export function Footer() {
   return (
     <footer className="mt-auto bg-primary text-white">
-      <div className="mx-auto max-w-6xl px-6 py-12">
+      <div className="mx-auto max-w-5xl px-6 py-12">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-[1.3fr_1fr_1fr]">
           <div className="flex flex-col items-start gap-3">
             <Link href="/" className="flex items-center gap-2">

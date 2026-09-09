@@ -22,14 +22,16 @@ export default function ContactPage() {
   ];
 
   return (
-    <div dir="rtl" className="mx-auto max-w-2xl px-6 py-12">
+    <div dir="rtl" className="mx-auto w-full max-w-5xl px-6 py-12">
       <JsonLd data={breadcrumbSchema(breadcrumbItems)} />
 
       <Breadcrumbs items={breadcrumbItems} />
 
       <h1 className="mb-6 mt-3 font-sans text-3xl font-bold text-foreground">اتصل بنا</h1>
 
-      <div className="space-y-4">
+      {/* Capped narrower than the page shell — two short contact cards
+          stretched to 1024px would look sparse rather than deliberate. */}
+      <div className="max-w-3xl space-y-4">
         <div className="flex items-start gap-4 rounded-xl border border-foreground/10 bg-surface p-5">
           <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary">
             <Mail className="size-5" />
