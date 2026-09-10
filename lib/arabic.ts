@@ -31,8 +31,17 @@ export function truncateForMeta(text: string, maxLength = 155): string {
  * or search engine itself, which reads worse than a clean, shorter title
  * chosen deliberately. Kept separate from truncateForMeta rather than a
  * shared default so each call site's limit stays self-documenting.
+ *
+ * maxLength budgets for the text THIS function returns, not the final
+ * <title> tag — every caller feeds that return value into a page's
+ * `title` metadata field, which the root layout's `"%s | PrayerFly"`
+ * template then appends " | PrayerFly" (12 chars) to. A 58-char cap here
+ * let the rendered title reach 70 chars, well past the ~60-char budget
+ * this function's own docs describe (confirmed via Screaming Frog crawl:
+ * 33 of 262 dua pages rendered over 60 chars). 46 keeps every real title
+ * in the corpus at or under 58 total once the suffix is appended.
  */
-export function truncateForTitle(text: string, maxLength = 58): string {
+export function truncateForTitle(text: string, maxLength = 46): string {
   if (text.length <= maxLength) return text;
   const cut = text.slice(0, maxLength);
   const lastSpace = cut.lastIndexOf(" ");
