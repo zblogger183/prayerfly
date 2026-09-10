@@ -23,6 +23,22 @@ const ROUTE_PREFIXES: { arabic: string; ascii: string }[] = [
   { arabic: "محفوظاتي", ascii: "bookmarks" },
 ];
 
+// Pages retired as duplicate content (merged into another page rather than
+// deleted outright — a stale bookmark, inbound link, or cached SERP entry
+// should land somewhere real, not 404). Checked before the ROUTE_PREFIXES
+// rewrite below so these 308 straight to the replacement instead of ever
+// reaching the (now-deleted) content file.
+const RETIRED_REDIRECTS: { from: string; to: string }[] = [
+  {
+    // Same hadith as دعاء-خروج-المنزل (identical text, same narrator —
+    // Anas ibn Malik), published as two separate pages; kept the one
+    // citing the primary source (Sunan Abi Dawud) over the one citing a
+    // compiled index (Sahih al-Jami).
+    from: "/دعاء/المنزل-والخروج/دعاء-الخروج-من-المنزل",
+    to: "/دعاء/المنزل-والخروج/دعاء-خروج-المنزل",
+  },
+];
+
 export function proxy(request: NextRequest) {
   // decodeURIComponent throws URIError on malformed percent-encoding (a
   // stray "%", an incomplete escape) — previously unguarded, so a crafted
@@ -34,6 +50,14 @@ export function proxy(request: NextRequest) {
     decodedPathname = decodeURIComponent(request.nextUrl.pathname);
   } catch {
     return;
+  }
+
+  for (const { from, to } of RETIRED_REDIRECTS) {
+    if (decodedPathname === from) {
+      const url = request.nextUrl.clone();
+      url.pathname = to;
+      return NextResponse.redirect(url, 308);
+    }
   }
 
   for (const { arabic, ascii } of ROUTE_PREFIXES) {
