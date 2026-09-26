@@ -28,6 +28,11 @@ export const DuaSchema = z.object({
   audio_url: z.string().optional(),
   last_updated: z.string(), // ISO date
   index: z.boolean().default(true), // false = noindex, for guarded programmatic pages
+  // Optional SERP-snippet overrides. Default <title> is primary_keyword and
+  // default description is quick_answer; set these only where a page's
+  // snippet is being deliberately tested against its Search Console CTR.
+  seo_title: z.string().optional(),
+  seo_description: z.string().optional(),
 });
 
 export type Dua = z.infer<typeof DuaSchema>;

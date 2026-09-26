@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { BookText, Clock, HelpCircle, Landmark, Repeat, ShieldCheck, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { BookText, Clock, Compass, HelpCircle, Landmark, Repeat, ShieldCheck, Sparkles } from "lucide-react";
 
 import { AuthenticityBadge } from "@/components/AuthenticityBadge";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -13,7 +14,7 @@ import { SectionHeading } from "@/components/SectionHeading";
 import { TOC, type TOCItem } from "@/components/TOC";
 import { truncateForMeta, truncateForTitle } from "@/lib/arabic";
 import { decodeSlug, getAllDuaSlugs, getDua, slugifyPillar } from "@/lib/content";
-import { getRelatedDuas } from "@/lib/related-content";
+import { getRelatedDuas, getSiblingDuas } from "@/lib/related-content";
 import { absoluteUrl, articleSchema, breadcrumbSchema, faqSchema } from "@/lib/schema";
 import { DuaActions } from "./DuaActions";
 
@@ -59,7 +60,7 @@ export async function generateMetadata({
   const dua = getDua(slug);
   if (!dua) return {};
 
-  const description = truncateForMeta(dua.quick_answer);
+  const description = truncateForMeta(dua.seo_description ?? dua.quick_answer);
   const canonicalPath = `/دعاء/${slugifyPillar(dua.pillar)}/${dua.slug}`;
   // Meta <title> tracks the H1's exact-keyword phrasing (primary_keyword)
   // rather than the more descriptive `title` field — keeps the title tag
@@ -67,7 +68,7 @@ export async function generateMetadata({
   // Google's ~60-char SERP truncation point, which `title` alone missed
   // on roughly a fifth of pages (some run well past 80 chars with brand
   // suffix included).
-  const metaTitle = truncateForTitle(dua.primary_keyword);
+  const metaTitle = truncateForTitle(dua.seo_title ?? dua.primary_keyword);
 
   return {
     title: metaTitle,
@@ -110,6 +111,7 @@ export default async function DuaPage({
   }
 
   const relatedDuas = getRelatedDuas(dua);
+  const moreInTopic = getSiblingDuas(dua, relatedDuas);
   const canonicalPath = `/دعاء/${pillar}/${dua.slug}`;
 
   const breadcrumbItems = [
@@ -125,6 +127,7 @@ export default async function DuaPage({
     ...(dua.variants.length > 0 ? [{ id: "variants", label: "صيغ أخرى" }] : []),
     { id: "faq", label: "الأسئلة الشائعة" },
     ...(relatedDuas.length > 0 ? [{ id: "related", label: "أدعية ذات صلة" }] : []),
+    ...(moreInTopic.length > 0 ? [{ id: "more", label: "المزيد في هذا الباب" }] : []),
     { id: "references", label: "المصادر" },
   ];
 
@@ -235,7 +238,22 @@ export default async function DuaPage({
             </section>
           )}
 
-          {/* 10. References */}
+          {/* 10. More from the same pillar — ring of sibling duas, see
+              getSiblingDuas() for why this isn't just related_slugs. */}
+          {moreInTopic.length > 0 && (
+            <section id="more" className="scroll-mt-20 space-y-3">
+              <SectionHeading icon={Compass}>المزيد في باب {dua.pillar}</SectionHeading>
+              <RelatedDuas items={moreInTopic} />
+              <Link
+                href={`/دعاء/${pillar}`}
+                className="inline-block text-sm font-medium text-primary hover:underline"
+              >
+                كل أدعية باب {dua.pillar} ←
+              </Link>
+            </section>
+          )}
+
+          {/* 11. References */}
           <section id="references" className="scroll-mt-20 space-y-2">
             <SectionHeading icon={Landmark}>المصادر</SectionHeading>
             <ol className="list-inside list-decimal space-y-1 text-sm text-foreground/70">
