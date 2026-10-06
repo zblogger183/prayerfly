@@ -1,0 +1,46 @@
+// Production worker for prayerfly.com. Build first: npm run build:cloudflare
+// (writes ./out), then: npx wrangler deploy.
+// Staging (noindex, *.workers.dev): cloudflare/wrangler.staging.jsonc.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "prayerfly",
+  "main": "cloudflare/worker.ts",
+  "compatibility_date": "2026-10-06",
+
+  // Only the custom domain below may serve the site. No *.workers.dev copy,
+  // no per-version preview URLs: either would be a second indexable host.
+  "workers_dev": false,
+  "preview_urls": false,
+
+  // Attaching a custom domain requires the zone to be active on this
+  // Cloudflare account and the apex to have no pre-existing DNS record; do
+  // this at cutover, not before (see the migration notes in the PR/chat).
+  "routes": [{ "pattern": "prayerfly.com", "custom_domain": true }],
+
+  "assets": {
+    "directory": "./out",
+    "binding": "ASSETS",
+    // Next's default is no trailing slash; match it.
+    "html_handling": "drop-trailing-slash",
+    // Serves out/404.html with a real 404 status.
+    "not_found_handling": "404-page",
+    // The Worker only needs to run for the Arabic public URLs (rewrite to the
+    // ASCII physical route). Patterns are the percent-encoded form of each
+    // ROUTE_PREFIXES entry in lib/route-map.ts; scripts/build-cloudflare.mjs
+    // fails the build if one is missing. Everything else (/, /_next, ASCII
+    // routes, robots/sitemap, etc.) is served by the asset layer directly.
+    "run_worker_first": [
+      "/google1ef7fd5451e318f1.html",
+      "/%D8%AF%D8%B9%D8%A7%D8%A1", "/%D8%AF%D8%B9%D8%A7%D8%A1/*",
+      "/%D8%A7%D8%B0%D9%83%D8%A7%D8%B1", "/%D8%A7%D8%B0%D9%83%D8%A7%D8%B1/*",
+      "/%D8%AE%D8%B7%D9%88%D8%A7%D8%AA", "/%D8%AE%D8%B7%D9%88%D8%A7%D8%AA/*",
+      "/%D8%B9%D9%86-%D8%A7%D9%84%D9%85%D9%88%D9%82%D8%B9", "/%D8%B9%D9%86-%D8%A7%D9%84%D9%85%D9%88%D9%82%D8%B9/*",
+      "/%D8%B3%D9%8A%D8%A7%D8%B3%D8%A9-%D8%A7%D9%84%D8%AE%D8%B5%D9%88%D8%B5%D9%8A%D8%A9", "/%D8%B3%D9%8A%D8%A7%D8%B3%D8%A9-%D8%A7%D9%84%D8%AE%D8%B5%D9%88%D8%B5%D9%8A%D8%A9/*",
+      "/%D8%A7%D8%AA%D8%B5%D9%84-%D8%A8%D9%86%D8%A7", "/%D8%A7%D8%AA%D8%B5%D9%84-%D8%A8%D9%86%D8%A7/*",
+      "/%D8%A7%D8%AF%D9%88%D8%A7%D8%AA", "/%D8%A7%D8%AF%D9%88%D8%A7%D8%AA/*",
+      "/%D9%85%D8%AD%D9%81%D9%88%D8%B8%D8%A7%D8%AA%D9%8A", "/%D9%85%D8%AD%D9%81%D9%88%D8%B8%D8%A7%D8%AA%D9%8A/*"
+    ]
+  },
+
+  "observability": { "enabled": true }
+}

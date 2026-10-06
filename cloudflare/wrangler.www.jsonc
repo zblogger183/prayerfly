@@ -1,0 +1,11 @@
+// www.prayerfly.com -> https://prayerfly.com (308, path and query kept).
+// Deploy at cutover, after the zone is active: npx wrangler deploy -c cloudflare/wrangler.www.jsonc
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "prayerfly-www-redirect",
+  "main": "./www-redirect.ts",
+  "compatibility_date": "2026-10-06",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "www.prayerfly.com", "custom_domain": true }]
+}

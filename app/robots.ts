@@ -7,6 +7,9 @@ import type { MetadataRoute } from "next";
 // noindex meta tag gated on the same var.
 const allowIndexing = process.env.NEXT_PUBLIC_ALLOW_INDEXING === "true";
 
+// Static file at build (required for the static export; harmless otherwise).
+export const dynamic = "force-static";
+
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {

@@ -1,5 +1,8 @@
 import type { MetadataRoute } from "next";
 
+// Static file at build (required for the static export; harmless otherwise).
+export const dynamic = "force-static";
+
 // Icons point at the existing app/icon.png + app/apple-icon.png file-
 // convention routes (already serving /icon.png and /apple-icon.png) rather
 // than duplicating those assets — no new files needed.

@@ -1,5 +1,8 @@
 import { OG_CONTENT_TYPE, OG_SIZE, renderOgCard } from "@/lib/og-image";
 
+// Prerendered at build (required for the static export).
+export const dynamic = "force-static";
+
 export const size = OG_SIZE;
 export const contentType = OG_CONTENT_TYPE;
 

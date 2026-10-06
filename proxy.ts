@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { RETIRED_REDIRECTS, toPhysicalPath } from "@/lib/route-map";
 
 // Replaces the /دعاء/... -> /dua/... mapping that used to live in
 // next.config.ts's rewrites(). Confirmed empirically that rewrites()
@@ -9,35 +10,11 @@ import { NextRequest, NextResponse } from "next/server";
 // for every real visitor. Decoding manually here and rewriting with
 // NextResponse.rewrite() sidesteps whatever encoding assumption rewrites()
 // makes internally.
-// One entry per top-level Arabic route from Section 4.1. Add to this list
-// rather than writing a new regex per route — Sprint 7/9 add more
-// (/ادوات/, /عن-الموقع, /سياسة-الخصوصية, /اتصل-بنا, /محفوظاتي).
-const ROUTE_PREFIXES: { arabic: string; ascii: string }[] = [
-  { arabic: "دعاء", ascii: "dua" },
-  { arabic: "اذكار", ascii: "azkar" },
-  { arabic: "خطوات", ascii: "guides" },
-  { arabic: "عن-الموقع", ascii: "about" },
-  { arabic: "سياسة-الخصوصية", ascii: "privacy" },
-  { arabic: "اتصل-بنا", ascii: "contact" },
-  { arabic: "ادوات", ascii: "tools" },
-  { arabic: "محفوظاتي", ascii: "bookmarks" },
-];
-
-// Pages retired as duplicate content (merged into another page rather than
-// deleted outright — a stale bookmark, inbound link, or cached SERP entry
-// should land somewhere real, not 404). Checked before the ROUTE_PREFIXES
-// rewrite below so these 308 straight to the replacement instead of ever
-// reaching the (now-deleted) content file.
-const RETIRED_REDIRECTS: { from: string; to: string }[] = [
-  {
-    // Same hadith as دعاء-خروج-المنزل (identical text, same narrator —
-    // Anas ibn Malik), published as two separate pages; kept the one
-    // citing the primary source (Sunan Abi Dawud) over the one citing a
-    // compiled index (Sahih al-Jami).
-    from: "/دعاء/المنزل-والخروج/دعاء-الخروج-من-المنزل",
-    to: "/دعاء/المنزل-والخروج/دعاء-خروج-المنزل",
-  },
-];
+//
+// The prefix table and retired-page redirects live in lib/route-map.ts so the
+// Cloudflare Worker (cloudflare/worker.ts), which replaces this file in
+// production, applies exactly the same rules. This file only runs under
+// `next dev` and on a plain (non-export) `next build`.
 
 export function proxy(request: NextRequest) {
   // decodeURIComponent throws URIError on malformed percent-encoding (a
@@ -60,19 +37,11 @@ export function proxy(request: NextRequest) {
     }
   }
 
-  for (const { arabic, ascii } of ROUTE_PREFIXES) {
-    // Was capped at two segments (enough for /دعاء/[pillar]/[slug]) until
-    // opengraph-image.tsx added a third, metadata-route segment
-    // (/دعاء/[pillar]/[slug]/opengraph-image) that silently 404'd through
-    // this proxy — capturing the whole remainder instead of two fixed
-    // groups generalizes to any depth, present or future.
-    const match = decodedPathname.match(new RegExp(`^/${arabic}(/.*)?$`));
-    if (match) {
-      const rest = match[1] ?? "";
-      const url = request.nextUrl.clone();
-      url.pathname = `/${ascii}${rest}`;
-      return NextResponse.rewrite(url);
-    }
+  const physical = toPhysicalPath(decodedPathname);
+  if (physical !== null) {
+    const url = request.nextUrl.clone();
+    url.pathname = physical;
+    return NextResponse.rewrite(url);
   }
 }
 

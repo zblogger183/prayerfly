@@ -1,0 +1,27 @@
+# Copied to out/_headers by scripts/build-cloudflare.mjs. Applies to files the
+# asset layer serves directly. Keep the security block in sync with
+# SECURITY_HEADERS in cloudflare/worker.ts (Worker responses don't get these).
+# No Content-Security-Policy yet: AdSense origins aren't known (see
+# next.config.ts for the reasoning).
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  Strict-Transport-Security: max-age=63072000; includeSubDomains
+
+# Hashed build output never changes.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Next writes generated OG images as extensionless files; without a rule they
+# would be served with no usable Content-Type.
+/opengraph-image
+  Content-Type: image/png
+/dua/*/opengraph-image
+  Content-Type: image/png
+/azkar/*/opengraph-image
+  Content-Type: image/png
+/guides/*/opengraph-image
+  Content-Type: image/png
